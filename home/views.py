@@ -229,7 +229,8 @@ def upload_form(request):
         
 
         if location != "":
-            print("Location :",location)
+            listloc = [location,]
+            print("Location :",listloc)
             loc = YourModel.objects.filter(location = location).values()
             return render(request,"media.html",{"location": loc})
         elif item_code != "":
