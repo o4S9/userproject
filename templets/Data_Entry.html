@@ -15,24 +15,15 @@
 <body>
     <form action="/dataEnter" method="post">
         {% csrf_token %}
-        <!-- <label for="code">Location :</label>
-        <select class="form-select" id="numberSelect" aria-label="Default select example" name="code">
-            <option selected disabled>Open this select menu</option>
-            {% for num in loc %}
-            <option value="{{ num}} {% if code == selected_code %}selected{% endif %}">{{ num }}</option>
-            {% endfor %}
 
-        </select> -->
         <label for="lno">Add Location no:</label>
         <input type="text" name="lno" value="">
         <button type="submit" class="btn btn-primary mb-3">Set-Location</button>
     </form>
 
-
     <table class="table table-bordered table-hover" id="myTable">
         <thead class="table-dark">
             <tr>
-
                 <th>Location</th>
                 <th>Item Code</th>
 
@@ -41,35 +32,30 @@
         <tbody>
             <form action="/dataEnter" method="post">
                 {% csrf_token %}
-
                 <tr>
-                     <td>
-                        <div name="no">{{ selected_code }}</div>
-                        <div>{{ln}}</div>
+
+                    <td>
+                        {{selected_product.loc_vise}} 
+                       <label for="loca">Location :</label>
+                        <input type="text" name="location" id="loca" value="{{ selected_product.id }} " readonly><br>
+                         <!-- <label>Location:</label>
+                       <select name="location" required>
+                            <option value="Location 1">Location 1</option>
+                            <option value="Location 2">Location 2</option>
+                            <option value="Location 3">Location 3</option>
+                        </select> -->
                     </td>
                     <td>
-                        <!-- {{selected_product.loc_vise}} -->
-                        <label for="loca">Location :</label>
-                        <input type="number" name="loca" id="loca" value="{{ selected_code }} " readonly>
-                    </td>
-                    <td>
-                        {% csrf_token %}
                         <label for="addl">addl :</label>
                         <input type="text" name="addl" id="addl" placeholder="Add a Item-List" value="" autofocus>
                         <button style="display: none;">Submit</button>
 
                     </td>
-                   
-
                 </tr>
             </form>
         </tbody>
     </table>
     <br>
-
-
-
-  
 </body>
 
 </html>

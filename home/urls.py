@@ -13,6 +13,10 @@ urlpatterns = [
     path('dataEnter', views.dataEntry, name='data_Entry'), 
     path('setLocation', views.setlocation, name='set_location'), 
     path('media', views.upload_form, name='Media'), 
+    path('master', views.upload_master, name='Master'), 
+    path('home', views.home, name='Home'), 
+    path('scanner', views.scannerFile, name='Scanner'), 
+
 
 
 

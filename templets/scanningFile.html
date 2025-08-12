@@ -88,8 +88,8 @@
     <hr style="border-color: rgba(255, 255, 255, 0.2)">
     <a href="/">🏠 Home</a>
     <a href="/master" onclick="Master_File()">📁 Master-File</a>
-    <a href="/upload/">📦 Stock-File</a>
-    <a href="/scanner">📷 Scanning-File</a>
+    <a href="">📦 Stock-File</a>
+    <a href="/sacnner">📷 Scanning-File</a>
   <a href="">🔄 Difference (Stock & Scan)</a>
   <a href="">📉 Short-File</a>
   <a href="">📈 Excess-File</a>
@@ -101,47 +101,61 @@
   <div class="overlay" id="overlay"></div>
 
   <!-- Main content -->
-
-  <!-- Content -->
-<div class="main-content">
-  <div class="row">
-    <!-- Master File Data Count -->
-    <div class="col-md-4 mb-4">
-      <div class="card border-0 shadow h-100 text-center">
-        <div class="card-body">
-          <h5 class="card-title text-info">Master File</h5>
-          {% if Count %}
-          <p class="display-6 fw-bold">{{Count}}</p>
-          {% endif %}
-          <span class="text-muted">Total Master Items</span>
+  <div class="main-content">
+   {% comment %} Master-File {% endcomment %}
+   <div id="masterFile">
+      <div class="container">
+    <h2 class="mb-4">Upload-Scanner Excel File</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="excel_file" class="form-label">Select-Scanner Excel File</label>
+            <input class="form-control" type="file" id="myFileInput" name="file" accept=".xls,.xlsx,.csv" required>
         </div>
-      </div>
-    </div>
+        <button class="btn btn-primary" type="submit" onclick="MSEX()">Import</button>
+    </form>
+</div><br>
+<!-- search file data  -->
+ <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Location</th>
+                    <th>Item Code</th>
+                    <th>Item Name</th>
+                    <th>Show Detials</th>
 
-    <!-- Stock File Data Count -->
-    <div class="col-md-4 mb-4">
-      <div class="card border-0 shadow h-100 text-center">
-        <div class="card-body">
-          <h5 class="card-title text-success">Stock File</h5>
-          {% if Scount %}
-          <p class="display-6 fw-bold">{{Scount}}</p>
-          {% endif %}
-          <span class="text-muted">Items in Stock File</span>
-        </div>
+                </tr>
+            </thead>
+            <tbody>
+                <form method="post" action="/scanner">
+                    {% csrf_token %}
+                    <tr>
+                    <td>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="location" name="location">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="item_code" name="item_code">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="item_name" name="item_name">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mb-10">
+                                <button type="submit" class="btn btn-primary">Show</button>
+                            </div>
+                        </td>
+                    </tr>
+                </form>
+            </tbody>
+        </table>
       </div>
-    </div>
 
-    <!-- Scanning File Data Count -->
-    <div class="col-md-4 mb-4">
-      <div class="card border-0 shadow h-100 text-center">
-        <div class="card-body">
-          <h5 class="card-title text-warning">Scanning File</h5>
-          <p class="display-6 fw-bold">578</p>
-          <span class="text-muted">Scanned Items</span>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 
@@ -169,6 +183,5 @@
 
 
  
-</body>
-</html>
+
 

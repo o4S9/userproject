@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<body>
+    <h1>Welcome</h1><br>
+
+    <div class="container my-1">
+        <div class="row g-4">
+            {% for item in data %}
+
+            <div class="col-md-4 col-sm-6">
+                <div class="card p-3 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title" name="location">Item Code: {{ item.location }}</h3>
+                        <h5 class="card-title" name="item_code">Item Code: {{ item.addl }}</h5>
+                        <p class="card-text" name="item_name"><strong>Name:</strong> {{ item.itemname }}</p>
+                        <p class="card-text"><strong>Size:</strong> {{ item.size }}</p>
+                        <p class="card-text"><strong>Qty:</strong> {{ item.qty }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% empty %}
+
+            {% endfor %}
+</body>
+
+</html>
