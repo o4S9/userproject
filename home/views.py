@@ -175,7 +175,7 @@ def dataEntry(request):
     if request.method == "POST":
         loc = request.POST.get("location")
         addl = request.POST.get("addl")
-        print("Loc & Addl: ",loc,addl)
+        # print("Loc & Addl: ",loc,addl)
         return redirect('/dataEnter')
 
 
@@ -187,8 +187,10 @@ def locSet(request):
         selected_code = request.POST.get('lno')
         print("CODE Location:",selected_code)            
         selected_product = location.objects.filter(loc_vise=selected_code).first()
-        print("CODE Location2:",selected_product)       
-    return render(request,'Data_Entry.html',{'selected_product': selected_product})
+        print("CODE Location2:",selected_product)  
+        return redirect("/dataEnter")  
+    # ,{'selected_product': selected_product}   
+    return render(request,'Data_Entry.html')
 
 
 def setlocation(request):
