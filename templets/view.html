@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartKart — Step into Style</title>
+  <meta name="description" content="SmartKart: Multi-brand sports footwear, apparel & accessories from Nike, Adidas, Puma, Skechers & New Balance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Unbounded:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f12; --muted:#8b9099; --card:#16181d; --accent:#37e0a1; --accent-2:#68a8ff; --text:#f5f7fb; --border:#23262d;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;             font-family: 'Segoe UI', sans-serif;
+}
+    body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; color:var(--text); background:var(--bg); line-height:1.55}
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block}
+
+    /* Layout */
+    .container{width:min(1200px,92vw); margin-inline:auto}
+    header{position:fixed; inset-inline:0; top:0; z-index:20; backdrop-filter:saturate(140%) blur(8px); background:linear-gradient(180deg, rgba(14,15,18,.85), rgba(14,15,18,.4) 60%, rgba(14,15,18,0)); border-bottom:1px solid var(--border)}
+    .nav{display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:14px 0}
+    .brand{display:flex; align-items:center; gap:.6rem; font-weight:800; letter-spacing:.5px}
+    .brand .logo{width:34px; height:34px; border-radius:12px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:grid; place-items:center; font-weight:900; color:#0b0e13}
+    .nav a.btn{padding:.7rem 1rem; border:1px solid var(--border); border-radius:14px}
+    .nav a.btn.primary{background:linear-gradient(135deg,var(--accent) 0%, var(--accent-2) 100%); color:#0b0e13; font-weight:700; border:0}
+
+    /* Hero */
+    .hero{position:relative; min-height:92vh; display:grid; place-items:center; isolation:isolate}
+    .hero::before{content:""; position:absolute; inset:0; background:url("https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=2400&auto=format&fit=crop") center/cover no-repeat; filter:brightness(.55); z-index:-2}
+    .hero::after{content:""; position:absolute; inset:0; background:radial-gradient(60% 60% at 50% 30%, rgba(56,224,161,.25), transparent 60%), linear-gradient(to bottom, rgba(14,15,18,.0) 20%, rgba(14,15,18,.55) 90%); z-index:-1}
+    .hero-inner{display:grid; gap:1.2rem; text-align:center; padding-top:7rem}
+    .mega{font-family:Unbounded, Inter; font-size:clamp(2.6rem, 7vw, 6.4rem); letter-spacing:1px; line-height:1; font-weight:800; margin:0}
+    .tag{font-size:clamp(1rem, 1.6vw, 1.25rem); color:var(--muted); max-width:800px; margin-inline:auto}
+    .cta{display:flex; gap:.8rem; justify-content:center; margin-top:.6rem}
+    .btn{padding:.9rem 1.2rem; border-radius:16px; border:1px solid var(--border); background:var(--card); color:var(--text); font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0b0e13; border:0}
+
+    /* Section */
+    section{padding:72px 0}
+    .section-head{display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:26px}
+    h2{font-family:Unbounded, Inter; margin:0; font-size:clamp(1.5rem,3vw,2.2rem)}
+    p.lead{color:var(--muted); max-width:760px}
+
+    /* About */
+    .about{display:grid; grid-template-columns:1.2fr .8fr; gap:32px}
+    .about .card{background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px}
+    .about .logos{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; opacity:.9}
+    .pill{border:1px dashed var(--border); border-radius:14px; padding:6px 10px; display:inline-flex; align-items:center; gap:8px}
+
+    /* Services */
+    .services{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+    .service{background:var(--card); border:1px solid var(--border); border-radius:20px; overflow:hidden}
+    .service .thumb{aspect-ratio:4/3; background:linear-gradient(135deg,#1f232b,#101217); border-bottom:1px solid var(--border); display:grid; place-items:center}
+    .service .body{padding:18px}
+    .service .title{font-weight:700}
+    details{border-top:1px dashed var(--border); margin-top:10px; padding-top:10px}
+
+    /* Featured (Projects) */
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:20px; overflow:hidden}
+    .card .img{aspect-ratio:4/3; background:#111;}
+    .card .body{padding:16px}
+    .badge{font-size:.75rem; color:#0b0e13; background:linear-gradient(135deg,var(--accent),var(--accent-2)); padding:6px 10px; border-radius:999px; font-weight:700; display:inline-block}
+
+    /* Counters */
+    .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+    .stat{background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px; text-align:center}
+    .stat .num{font-size:2rem; font-weight:900; font-family:Unbounded}
+    .muted{color:var(--muted)}
+
+    /* Gallery */
+    .gallery{display:grid; grid-template-columns:repeat(6, 1fr); gap:10px}
+    .gallery .g{border-radius:16px; overflow:hidden; border:1px solid var(--border)}
+    .gallery .g:nth-child(1){grid-column:span 2}
+    .gallery .g:nth-child(2){grid-column:span 2}
+    .gallery .g:nth-child(3){grid-column:span 2}
+    .gallery .g:nth-child(4){grid-column:span 3}
+    .gallery .g:nth-child(5){grid-column:span 3}
+    .gallery .g img{width:100%; height:100%; object-fit:cover}
+
+    /* Footer */
+    footer{padding:60px 0 80px; color:var(--muted); border-top:1px solid var(--border)}
+
+    /* Responsive */
+    @media (max-width: 960px){
+      .about{grid-template-columns:1fr}
+      .services{grid-template-columns:1fr 1fr}
+      .grid-3{grid-template-columns:1fr 1fr}
+      .gallery{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width: 640px){
+      .nav a.btn.hide-sm{display:none}
+      .services, .grid-3, .stats{grid-template-columns:1fr}
+      .gallery{grid-template-columns:repeat(2,1fr)}
+      .hero-inner{padding-top:5.6rem}
+    }
+    .brand-strip {
+  display: flex;
+  gap: 40px;
+  overflow: hidden;
+  padding: 20px 0;
+}
+.brand-strip img {
+  height: 50px;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.brand-strip img:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container nav">
+      <a href="#" class="brand"><span class="logo">SK</span> SmartKart</a>
+      <nav style="display:flex; gap:.6rem; align-items:center">
+        <a href="#about" class="btn hide-sm">About</a>
+        <a href="#services" class="btn hide-sm">Services</a>
+        <a href="#featured" class="btn hide-sm">Featured</a>
+        <a href="#gallery" class="btn hide-sm">Gallery</a>
+        <a href="/" class="btn primary">Shop Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="home">
+    <div class="container hero-inner">
+      <h1 class="mega" id="headline">STEP INTO STYLE</h1>
+      <p class="tag">Your all‑in‑one destination for sports footwear, apparel and accessories from Nike, Adidas, Puma, Skechers & New Balance.</p>
+      <div class="cta">
+        <a class="btn primary" href="#featured">Shop Latest Drops</a>
+        <a class="btn" href="#about">Why SmartKart</a>
+      </div>
+      <div style="margin-top:22px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+        <span class="pill">Free shipping over ₹999</span>
+        <span class="pill">Easy 7‑day returns</span>
+        <span class="pill">100% authentic</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <div class="section-head">
+        <h2>About SmartKart</h2>
+        <span class="badge">Multi‑Brand</span>
+      </div>
+      <div class="about">
+        <div class="card">
+          <p class="lead">Welcome to <strong>SmartKart</strong>, your go‑to destination for premium sports footwear, stylish apparel and top‑quality accessories. Whether you’re training, running or just stepping out in style, our curated collections bring performance, comfort and trend‑setting design together.</p>
+          <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:12px">
+            <div class="pill">Fast delivery</div>
+            <div class="pill">Cash on delivery</div>
+            <div class="pill">Student perks</div>
+            <div class="pill">Size exchange</div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="muted" style="margin:0 0 10px">Brands you love</p>
+          <div class="logos">
+            <img alt="Nike" src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg">
+            <img alt="Adidas" src="https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg">
+            <img alt="Puma" src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Puma_AG.svg">
+            <img alt="Skechers" src="https://upload.wikimedia.org/wikipedia/commons/7/76/Skechers_logo.svg">
+            <img alt="New Balance" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/New_Balance_logo.svg">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <div class="container">
+      <div class="section-head">
+        <h2>Services</h2>
+        <p class="lead">We make shopping simple with authentic products, size help and quick shipping.</p>
+      </div>
+      <div class="services">
+        <article class="service">
+          <div class="thumb"><span class="badge">Assured</span></div>
+          <div class="body">
+            <div class="title">Wide Brand Selection</div>
+            <p class="muted">All your favourites in one place: Nike, Adidas, Puma, Skechers & New Balance.</p>
+            <details>
+              <summary>Details</summary>
+              <p class="muted">Fresh drops weekly. Limited editions & evergreen classics.</p>
+            </details>
+          </div>
+        </article>
+        <article class="service">
+          <div class="thumb"><span class="badge">New</span></div>
+          <div class="body">
+            <div class="title">Latest Collections</div>
+            <p class="muted">Be first to shop seasonal colourways and tech updates.</p>
+            <details>
+              <summary>Details</summary>
+              <p class="muted">Curated by athletes & stylists for performance and lifestyle.</p>
+            </details>
+          </div>
+        </article>
+        <article class="service">
+          <div class="thumb"><span class="badge">Easy</span></div>
+          <div class="body">
+            <div class="title">Fast Delivery & Easy Returns</div>
+            <p class="muted">Lightning‑fast dispatch. 7‑day size exchanges, hassle‑free.</p>
+            <details>
+              <summary>Details</summary>
+              <p class="muted">Track orders in real‑time and manage returns in your account.</p>
+            </details>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured / Projects -->
+  <section id="featured">
+    <div class="container">
+      <div class="section-head">
+        <h2>Featured Drops</h2>
+        <a class="btn" href="#shop">View All</a>
+      </div>
+      <div class="grid-3">
+        <article class="card">
+          <img class="img" src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=1600&auto=format&fit=crop" alt="Nike Pegasus" />
+          <div class="body">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px">
+              <strong>Nike Air Zoom Pegasus 41</strong>
+              <span class="badge">₹9,999</span>
+            </div>
+            <p class="muted">Built for speed and comfort with ReactX cushioning.</p>
+            <div style="display:flex; gap:8px"><a class="btn primary" href="#">Shop Now</a><a class="btn" href="#">Details</a></div>
+          </div>
+        </article>
+        <article class="card">
+          <img class="img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1600&auto=format&fit=crop" alt="Adidas Ultraboost" />
+          <div class="body">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px">
+              <strong>Adidas Ultraboost 23</strong>
+              <span class="badge">₹12,499</span>
+            </div>
+            <p class="muted">Primeknit upper with Boost midsole for endless energy.</p>
+            <div style="display:flex; gap:8px"><a class="btn primary" href="#">Shop Now</a><a class="btn" href="#">Details</a></div>
+          </div>
+        </article>
+        <article class="card">
+          <img class="img" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1600&auto=format&fit=crop" alt="New Balance 327" />
+          <div class="body">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px">
+              <strong>New Balance 327</strong>
+              <span class="badge">₹8,499</span>
+            </div>
+            <p class="muted">Retro silhouette with modern comfort for everyday wear.</p>
+            <div style="display:flex; gap:8px"><a class="btn primary" href="#">Shop Now</a><a class="btn" href="#">Details</a></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Counters -->
+  <section id="stats">
+    <div class="container">
+      <div class="section-head">
+        <h2>SmartKart in Numbers</h2>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="num" data-target="316">0</div>
+          <div class="muted">Styles Live</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-target="740">0</div>
+          <div class="muted">Happy Customers</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-target="215">0</div>
+          <div class="muted">Cities Served</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery">
+    <div class="container">
+      <div class="section-head">
+        <h2>Gallery</h2>
+        <p class="lead">Lifestyle moments & close‑ups from the community.</p>
+      </div>
+      <div class="gallery">
+        <div class="g"><img src="https://images.unsplash.com/photo-1520975922203-bb2c4d0e76c5?q=80&w=1200&auto=format&fit=crop" alt="Gallery 1"></div>
+        <div class="g"><img src="https://images.unsplash.com/photo-1519744346366-d4fdc1d0b70b?q=80&w=1200&auto=format&fit=crop" alt="Gallery 2"></div>
+        <div class="g"><img src="https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=1200&auto=format&fit=crop" alt="Gallery 3"></div>
+        <div class="g"><img src="https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=1200&auto=format&fit=crop" alt="Gallery 4"></div>
+        <div class="g"><img src="https://images.unsplash.com/photo-1542291022-958d2b94dced?q=80&w=1200&auto=format&fit=crop" alt="Gallery 5"></div>
+      </div>
+    </div>
+  </section>
+  <!-- Add after Gallery section -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-head">
+      <h2>What Our Customers Say</h2>
+      <p class="lead">Trusted by athletes, loved by trendsetters.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="body">
+          <p>"Absolutely love my Ultraboost from SmartKart! Super comfy and stylish."</p>
+          <strong>- Priya S.</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="body">
+          <p>"Fast delivery and genuine products. Highly recommend!"</p>
+          <strong>- Rahul M.</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="body">
+          <p>"Great variety and excellent customer service."</p>
+          <strong>- Ananya R.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brands Carousel -->
+<section id="brands">
+  <div class="container">
+    <div class="section-head">
+      <h2>Our Partner Brands</h2>
+    </div>
+    <div class="brand-strip">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Nike">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg" alt="Adidas">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Puma_AG.svg" alt="Puma">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/76/Skechers_logo.svg" alt="Skechers">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/New_Balance_logo.svg" alt="New Balance">
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section id="newsletter">
+  <div class="container">
+    <div class="section-head">
+      <h2>Stay Updated</h2>
+      <p class="lead">Get the latest drops & exclusive deals straight to your inbox.</p>
+    </div>
+    <form style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      <input type="email" placeholder="Enter your email" required style="padding:0.8rem 1rem; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--text); flex:1; min-width:240px;">
+      <button type="submit" class="btn primary">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap">
+      <div>© <span id="year"></span> SmartKart • All rights reserved.</div>
+      <div>Made with ❤️ for athletes & creators.</div>
+    </div>
+  </footer>
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script>
+    // Utilities
+    const $ = (s, p=document)=>p.querySelector(s);
+    const $$ = (s, p=document)=>[...p.querySelectorAll(s)];
+    $('#year').textContent = new Date().getFullYear();
+
+    // Headline mask reveal
+    const headline = $('#headline');
+    headline.style.clipPath = 'inset(0 0 100% 0)';
+    gsap.to(headline, {clipPath:'inset(0 0 0% 0)', duration:1.2, ease:'power3.out', delay:.2});
+
+    // Scroll reveal for sections
+    gsap.utils.toArray('section').forEach((sec, i)=>{
+      if(i===0) return; // skip hero
+      gsap.from(sec.querySelector('.section-head'), {opacity:0, y:24, duration:.8, ease:'power2.out', scrollTrigger:{trigger:sec, start:'top 80%'}});
+      gsap.from($$('.card, .service, .stat, .g', sec), {opacity:0, y:26, duration:.7, ease:'power2.out', stagger:.08, scrollTrigger:{trigger:sec, start:'top 75%'}});
+    });
+
+    // Parallax hero background (subtle)
+    gsap.to('.hero::before', {}); // placeholder keeps CSS rule from being purged by some bundlers
+    // Use ScrollTrigger to parallax by adjusting background-position via wrapper element
+    const hero = $('.hero');
+    ScrollTrigger.create({
+      trigger: hero,
+      start: 'top top',
+      end: 'bottom top',
+      onUpdate: self => {
+        const y = self.progress * 40; // subtle
+        hero.style.backgroundPositionY = y + 'px';
+      }
+    });
+
+    // Counters
+    function animateCount(el){
+      const target = +el.dataset.target;
+      const obj = {val:0};
+      gsap.to(obj, {val:target, duration:1.2, ease:'power1.out', onUpdate(){
+        el.textContent = Math.floor(obj.val).toLocaleString('en-IN');
+      }});
+    }
+    ScrollTrigger.batch('.num', {
+      start:'top 85%', onEnter: batch => batch.forEach(animateCount)
+    });
+
+    // Hover zoom for product cards
+    $$('.card .img').forEach(img=>{
+      img.addEventListener('mouseenter', ()=> gsap.to(img, {scale:1.03, duration:.4}));
+      img.addEventListener('mouseleave', ()=> gsap.to(img, {scale:1, duration:.4}));
+    });
+
+    // Smooth expand for <details>
+    $$('details').forEach(d=>{
+      d.addEventListener('toggle', ()=>{
+        const content = d.querySelector('p');
+        if(d.open){ gsap.fromTo(content,{height:0, opacity:0},{height:'auto', opacity:1, duration:.35, ease:'power1.out'}); }
+      });
+    });
+    // 
+    // Floating pills animation
+gsap.to('.pill', {
+  y: -6,
+  repeat: -1,
+  yoyo: true,
+  duration: 1.2,
+  stagger: 0.2,
+  ease: 'power1.inOut'
+});
+
+// Testimonials fade-up
+gsap.from('#testimonials .card', {
+  opacity: 0,
+  y: 40,
+  duration: 0.8,
+  stagger: 0.15,
+  scrollTrigger: {
+    trigger: '#testimonials',
+    start: 'top 80%'
+  }
+});
+
+// Auto-scroll brand strip
+gsap.to('.brand-strip', {
+  xPercent: -50,
+  repeat: -1,
+  duration: 20,
+  ease: 'linear'
+});
+
+// Newsletter fade-in
+gsap.from('#newsletter form', {
+  opacity: 0,
+  y: 30,
+  duration: 0.7,
+  scrollTrigger: {
+    trigger: '#newsletter',
+    start: 'top 85%'
+  }
+});
+
+  </script>
+</body>
+</html>

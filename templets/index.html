@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Audit-Manager Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -59,7 +62,7 @@
         position: fixed;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         top: 0;
         left: 0;
         z-index: 1040;
@@ -71,6 +74,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Toggle Button (hamburger) -->
@@ -87,14 +91,14 @@
     <h5>Welcome {{request.user}}</h5>
     <hr style="border-color: rgba(255, 255, 255, 0.2)">
     <a href="/">🏠 Home</a>
-    <a href="/master" onclick="Master_File()">📁 Master-File</a>
+    <a href="/master">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
     <a href="/scanner">📷 Scanning-File</a>
-  <a href="">🔄 Difference (Stock & Scan)</a>
-  <a href="">📉 Short-File</a>
-  <a href="">📈 Excess-File</a>
-  <a href="">🧾 SIExcess-File</a>
-  <a href="/logout">🔓 Logout</a>
+    <a href="/dataEnter">🔄 Difference (Stock & Scan)</a>
+    <a href="">📉 Short-File</a>
+    <a href="">📈 Excess-File</a>
+    <a href="">🧾 SIExcess-File</a>
+    <a href="/logout">🔓 Logout</a>
   </div>
 
   <!-- Mobile overlay -->
@@ -103,53 +107,134 @@
   <!-- Main content -->
 
   <!-- Content -->
-<div class="main-content">
-  <div class="row">
-    <!-- Master File Data Count -->
-    <div class="col-md-4 mb-4">
-      <div class="card border-0 shadow h-100 text-center">
-        <div class="card-body">
-          <h5 class="card-title text-info">Master File</h5>
-          {% if Count %}
-          <p class="display-6 fw-bold">{{Count}}</p>
-          {% endif %}
-          <span class="text-muted">Total Master Items</span>
+  <div class="main-content">
+    <div class="row">
+      <!-- Master File Data Count -->
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title text-info">Master File</h5>
+            {% if Count %}
+            <p class="display-6 fw-bold">{{Count}}</p>
+            {% endif %}
+            <span class="text-muted">Total Master Items</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stock File Data Count -->
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title text-success">Stock File</h5>
+            {% if Scount %}
+            <p class="display-6 fw-bold">{{Scount}}</p>
+            {% endif %}
+            <span class="text-muted">Items in Stock File</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scanning File Data Count -->
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title text-warning">Scanning File</h5>
+            {% if Sccount %}
+            <p class="display-6 fw-bold">{{Sccount}}</p>
+            {% endif %} 
+            <span class="text-muted">Scanned Items</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Stock File Data Count -->
-    <div class="col-md-4 mb-4">
-      <div class="card border-0 shadow h-100 text-center">
-        <div class="card-body">
-          <h5 class="card-title text-success">Stock File</h5>
-          {% if Scount %}
-          <p class="display-6 fw-bold">{{Scount}}</p>
-          {% endif %}
-          <span class="text-muted">Items in Stock File</span>
-        </div>
+    {% comment %} Artical Show {% endcomment %}
+    <div class="container mt-4">
+
+      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-striped table-bordered" style=" margin-top: 15px;">
+          <thead class="table-dark " style=" position: sticky; top: 0; background: white; z-index: 2; ">
+            <tr>
+              <th>Item Code</th>
+              <th>Item Name</th>
+              <th>Show Detials</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <form method="post" action="/">
+              {% csrf_token %}
+              <tr>
+                <th><label for="addl">ADDL :</label>
+                  <input type="text" name="addl" id="addl">
+                </th>
+                <th><label for="itename">Item Name :</label>
+                  <input type="text" name="itename" id="itename">
+                </th>
+                <th>
+                  <button>Show</button>
+                </th>
+              </tr>
+            </form>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% comment %} Show Card {% endcomment %}
+    <div class="container mt-4">
+
+      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-striped table-bordered" style=" margin-top: 15px;">
+          <thead class="table-dark " style=" position: sticky; top: 0; background: white; z-index: 2; ">
+            <tr>
+
+
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <div class="container py-4">
+                <div class="row g-4">
+                  {% for item in masterProducts %}
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card product-card">
+                      <div class="card-header">
+                        {{ item.ITEMNAME }}
+                      </div>
+                      <div class="card-body">
+                        <p><strong>Date:</strong> {{ item.my_date }}</p>
+                        <p><strong>ADDL:</strong> {{ item.ADDL }}</p>
+                        <p><strong>Item Code:</strong> {{ item.ITEMCODE }}</p>
+                        <p><strong>Size:</strong> {{ item.SIZE }}</p>
+                        <p><strong>MRP:</strong> ₹{{ item.MRP }}</p>
+                        <p><strong>Brand:</strong> {{ item.BRANDNAME }}</p>
+                        <p><strong>Section:</strong> {{ item.SECTION }}</p>
+                        <p><strong>Basic Rate:</strong> ₹{{ item.BASICRATE }}</p>
+                        <p><strong>Season:</strong> {{ item.SEASON }}</p>
+                        <p><strong>Colours:</strong> {{ item.COLOURS }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+
+            </tr>
+            </form>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- Scanning File Data Count -->
-    <div class="col-md-4 mb-4">
-      <div class="card border-0 shadow h-100 text-center">
-        <div class="card-body">
-          <h5 class="card-title text-warning">Scanning File</h5>
-          <p class="display-6 fw-bold">578</p>
-          <span class="text-muted">Scanned Items</span>
-        </div>
-      </div>
-    </div>
+
   </div>
-</div>
-
 
 
   </div>
 
-  <script >
-   const sidebar = document.getElementById("sidebar");
+  <script>
+    const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
     const toggle = document.getElementById("menu-toggle");
 
@@ -165,10 +250,11 @@
   </script>
 
 </body>
+
 </html>
 
 
- 
+
 </body>
-</html>
 
+</html>

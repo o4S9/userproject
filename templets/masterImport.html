@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Audit-Manager Dashboard</title>
@@ -59,7 +60,7 @@
         position: fixed;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         top: 0;
         left: 0;
         z-index: 1040;
@@ -69,8 +70,32 @@
         display: block;
       }
     }
+
+    .product-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+
+    .card-header {
+      background-color: #0d6efd;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .card-body p {
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- Toggle Button (hamburger) -->
@@ -89,12 +114,12 @@
     <a href="/">🏠 Home</a>
     <a href="/master" onclick="Master_File()">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
-    <a href="/sacnner">📷 Scanning-File</a>
-  <a href="">🔄 Difference (Stock & Scan)</a>
-  <a href="">📉 Short-File</a>
-  <a href="">📈 Excess-File</a>
-  <a href="">🧾 SIExcess-File</a>
-  <a href="/logout">🔓 Logout</a>
+    <a href="/scanner">📷 Scanning-File</a>
+    <a href="/dataEnter">🔄 Difference (Stock & Scan)</a>
+    <a href="">📉 Short-File</a>
+    <a href="">📈 Excess-File</a>
+    <a href="">🧾 SIExcess-File</a>
+    <a href="/logout">🔓 Logout</a>
   </div>
 
   <!-- Mobile overlay -->
@@ -102,62 +127,46 @@
 
   <!-- Main content -->
   <div class="main-content">
-   {% comment %} Master-File {% endcomment %}
-   <div id="masterFile">
+    {% comment %} Master-File {% endcomment %}
+    <div id="masterFile">
       <div class="container">
-    <h2 class="mb-4">Upload-Master Excel File</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
+        <h2 class="mb-4">Upload-Master Excel File</h2>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
             <label for="excel_file" class="form-label">Select-Master Excel File</label>
             <input class="form-control" type="file" id="myFileInput" name="file" accept=".xls,.xlsx,.csv" required>
-        </div>
-        <button class="btn btn-primary" type="submit" onclick="MSEX()">Import</button>
-    </form>
-</div><br>
-<!-- search file data  -->
- <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Item Code</th>
-                    <th>Item Name</th>
-                    <th>Show Detials</th>
+          </div>
+          <button class="btn btn-primary" type="submit" onclick="MSEX()">Import</button>
+        </form>
+      </div><br>
+      <!-- search file data  -->
 
-                </tr>
-            </thead>
-            <tbody>
-                <form method="post" action="/master">
-                    {% csrf_token %}
-                    <tr>
-                    
-                      
-                    </tr>
-                </form>
-            </tbody>
-        </table>
-      </div>
-
-</div>
-
+    </div>
+  </div>
 
 
   </div>
 
-  <script >
-      let r = document.getElementById("myFileInput").value;
-  let masterfile = document.getElementById("masterFile");
-  function Master_File(){
-     document.getElementById("masterFile").style.display = "block";
-  }
+ 
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let r = document.getElementById("myFileInput").value;
+    let masterfile = document.getElementById("masterFile");
+    function Master_File() {
+      document.getElementById("masterFile").style.display = "block";
+    }
 
     function refreshB() {
-        
+
     }
-  window.onload = function () {
-    document.getElementById("formFile").value = "";
-    console.log("File input cleared on page load.");
-  };
-   const sidebar = document.getElementById("sidebar");
+    window.onload = function () {
+      document.getElementById("formFile").value = "";
+      console.log("File input cleared on page load.");
+    };
+    const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
     const toggle = document.getElementById("menu-toggle");
 
@@ -173,9 +182,5 @@
   </script>
 
 </body>
+
 </html>
-
-
- 
-
-

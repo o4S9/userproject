@@ -16,22 +16,30 @@ from django.template import loader
 # Create your views here.
 def index(request):
 #    print(request.user)
+   addl = None
+   itename = None
    if request.user.is_anonymous:
         # addl = request.POST.get('addl')  
         # contact = Barcode(addl)
         # contact.save()
         return redirect('/login') 
-#    if request.method == 'POST':
-#         addl = request.POST.get('addl')  
-#         contact = Barcode(addl)
-#         contact.save()
    MasterCount = MasterData.objects.exclude(ADDL = True).count()
    StockCount = StockData.objects.exclude(BARCODE = True).count()
-
-#    print(MasterCount)     
+   ScanningCount = loctionRecords.objects.exclude(add_item_list = True).count()
+   if request.method == "POST":
+       addl = request.POST.get("addl")
+       itename = request.POST.get("itename")
+   if addl:
+       master = MasterData.objects.filter(ADDL = addl).values()
+    #    print(master)
+       return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,})
+   elif itename:
+       master = MasterData.objects.filter(ADDL = addl).values()
+       return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,})
    return render(request, 'index.html',{
        "Count":MasterCount,
        "Scount":StockCount,
+       "Sccount":ScanningCount,       
        }) 
 
 def loginuser(request):
@@ -55,7 +63,15 @@ def loginuser(request):
 
 def logoutuser(request):
     logout(request)
-    return redirect('/login') 
+    return redirect('/view')
+
+
+# def fileView():
+#     fl = ["Master File :",file,]
+#     filePath = fl
+#     df = pd.read_excel(filePath)
+#     print(df)
+#     list_of_csv = [list(row) for row in df.values]
 
 def view_data(request):
     if request.method == 'POST':
@@ -63,7 +79,8 @@ def view_data(request):
         li = [barcode,]
         # print("List:",li)
         for i in li:
-            print("List :",i) 
+            pass
+            # print("List :",i) 
         # if barcode:
         #     print('Barcode',barcode)
         
@@ -83,8 +100,8 @@ def view_data(request):
     #     records = YourModel.objects.filter(addl=addl_input)
     # else:
     #     records = []
-    records = dataEntry.objects.all()
-    return render(request, 'view_data.html',{'records': records})
+    # records = dataEntry.objects.all()
+    return render(request, 'view_data.html')
 
     # return render(request, 'view_data.html')
     
@@ -108,7 +125,7 @@ def save_barcode(request):
         barcode = request.POST.get('barcode')
         id = request.GET.get('locationInput')  # or request.POST.get('addl') if form is POST
 
-        print(id,barcode)
+        # print(id,barcode)
         
         # print(barcode)
         # contact = Barcode(barcode)
@@ -170,41 +187,65 @@ def dataEntry(request):
     #     print("CODE 1.5:",addl)
 
        
+    # if request.method == "POST":
+    #     selected_code = request.POST.get('lno')
+    #     print("CODE Location:",selected_code) 
+    #     selected_product = location.objects.filter(loc_vise=selected_code).first()
+    #     print("Loc_vise :",selected_product)
+    #     return render(request,'Data_Entry.html',{'selected_product': selected_product} )
+
 
       
     if request.method == "POST":
         loc = request.POST.get("location")
         addl = request.POST.get("addl")
         # print("Loc & Addl: ",loc,addl)
-        return redirect('/dataEnter')
+        Selected_barcode = StockData.objects.filter(BARCODE=addl).first()
+        Selected_barcode_Master = MasterData.objects.filter(ITEMCODE = addl).first()
+        # print(Selected_barcode)
+        if Selected_barcode:
+            barcode = StockData(SCANNINGDATA = addl)
+            barData = loctionRecords(loc_rec = loc,add_item_list = addl)
+            barcode.save()
+            barData.save()
+            return redirect('/dataEnter')
+        elif Selected_barcode_Master:
+            ser = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
+            ser.save()
+            return redirect('/dataEnter')
+        else:
+            # print("Barecode Not Match!")
+            messages.success(request, "This Product Not in your Stock...")
+            return redirect('/dataEnter')
 
+        
 
     return render(request,'Data_Entry.html')
 
 
-def locSet(request):
-    if request.method == "POST":
-        selected_code = request.POST.get('lno')
-        print("CODE Location:",selected_code)            
-        selected_product = location.objects.filter(loc_vise=selected_code).first()
-        print("CODE Location2:",selected_product)  
-        return redirect("/dataEnter")  
-    # ,{'selected_product': selected_product}   
-    return render(request,'Data_Entry.html')
+# def locSet(request):
+#     if request.method == "POST":
+#         selected_code = request.POST.get('lno')
+#         print("CODE Location:",selected_code)            
+#         selected_product = location.objects.filter(loc_vise=selected_code).first()
+#         print("CODE Location2:",selected_product)  
+#         return redirect("/dataEnter")  
+#     #   
+#     return render(request,'Data_Entry.html')
 
 
-def setlocation(request):
+def view(request):
     selected_code = None
     selected_product = None
     loc = location.objects.values_list('id', flat=True).distinct()
 
     if request.method == "POST":
         selected_code = request.POST.get('lno')
-        print("CODE 3:",selected_code)
+        # print("CODE 3:",selected_code)
         # selected_product = location.objects.filter(loc_vise=selected_code).first()
     #     # # selected_product = location.objects.filter(loc_vise=selected_code).first()
         # return render(request,'set_location.html',{'selected_code': selected_product})
-    return render(request,'set_location.html',{'loc':loc})
+    return render(request,'view.html',{'loc':loc})
 
 from django.db.models import Count
 def upload_form(request):
@@ -358,8 +399,6 @@ def createMaster_bd(file_path):
     list_of_csv = [list(row) for row in df.values]
     # today =  datetime.today().date()
     for l in list_of_csv:
-        # print(l)
-
         MasterData.objects.create(
         ADDL         = l[0],
         ITEMCODE	 = l[1],
@@ -373,7 +412,6 @@ def createMaster_bd(file_path):
         COLOURS      = l[9], 
         )
 
-    
 def upload_master(request):
     if request.method == "POST":
         file = request.FILES['file'] 
@@ -397,4 +435,13 @@ def MasterDataCount(request):
     return render(request,"index.html")
 
 def scannerFile(request):
-    return render(request,'scanningFile.html')
+    if request.method == "POST":
+        location = request.POST.get("location")
+        addl = request.POST.get("addl")
+        print("L&AL :",location,addl)
+
+    return render(request,'Data_Entry.html')
+
+# user view 
+def userView(request):
+    return render(request, "userView.html")

@@ -46,7 +46,10 @@ class loctionRecords(models.Model):
     loc_rec = models.CharField(max_length=200, default="Not Assigned", null=True, blank=True)
     add_item_list = models.CharField(max_length=200, default="Not Soire", null=True, blank=True)
 
-
+class ExcessRecordScanning(models.Model):
+    my_date = models.DateField(auto_now_add=True)  # Stores only the date
+    loc_rec = models.CharField(max_length=200, default="Not Assigned", null=True, blank=True)
+    add_item_list = models.CharField(max_length=200, default="Not Soire", null=True, blank=True)
 
 
 
@@ -110,3 +113,4 @@ class StockData(models.Model):
     CLOSINGVALUEMRP =models.CharField(max_length=200)
     GODOWNNAME	    =models.CharField(max_length=200)
     ITEMNAME_SHADESHORTNAME_PACKGROUPNAME =models.CharField(max_length=200)
+    SCANNINGDATA    = models.CharField(max_length=255, default='Short')
