@@ -571,6 +571,7 @@ def differencSS(request):
             output_field=IntegerField()  # enforce integer output
         )
     )
+   
     # RESULT1
     result1 = qs.annotate(
         home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
@@ -592,29 +593,33 @@ def differencSS(request):
     # print(result)
     if request.method == 'POST':
         status = request.POST.get('status')
+        download = request.POST.get('download')
+        # print(download)
         if status == 'all':
             return render(request,'DBS&S.html',{"result":result,})
         elif status == 'short':
             return render(request,'DBS&S.html',{"result":result1,})
         elif status == 'excess':
             return render(request,'DBS&S.html',{"result":result2,})
+        elif download == 'download':
+            data = list(result)   # result is your queryset with annotate()
+            # Load into Pandas
+            df = pd.DataFrame(data)
+            # Specify download path (example for Windows)
+            download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
+            # Make sure directory exists
+            os.makedirs(os.path.dirname(download_path), exist_ok=True)
+
+            # Save to Excel
+            df.to_excel(download_path, index=False)
+            # print(f"File saved to: {download_path}")
+            return redirect('/ss')
         else:
             pass
             # print(status)
 
-         # Get user Downloads path (works on Windows, Linux, Mac)
-    # downloads_path = os.path.join(os.path.expanduser("C:\Users\Onkar"), "\Downloads")
+  
 
-    # # Save as Excel
-    # file_path = os.path.join(downloads_path, "stock_scanning_diff_data.xlsx")
-    # df.to_excel(file_path, index=False)
-    df = pd.DataFrame(list(result))
-    # if df:
-    #     # --- Export to Excel directly in response ---
-    #     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    #     response['Content-Disposition'] = 'attachment; filename="stock_data.xlsx"'
-    #     df.to_excel(response, index=False)
-    #     return response
 
     return render(request,'DBS&S.html')
 

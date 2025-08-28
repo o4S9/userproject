@@ -138,24 +138,24 @@
     </div>
 
 
- <!-- Table Section -->
-<div class="container-fluid py-3">
-  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-    <table class="table table-bordered table-striped table-hover align-middle">
-      <thead class="table-dark text-center sticky-top">
-        <tr>
-          <th>Addl</th>
-          <th>Barcode</th>
-          <th>Article No</th>
-          <th>Size</th>
-          <th>Brand</th>
-          <th>Section</th>
-          <th>MRP</th>
-          <th>Stock Count</th>
-          <th>Scanning Count</th>
-          <th>Difference</th>
-        </tr>
-     <tbody>
+    <!-- Table Section -->
+    <div class="container-fluid py-3">
+      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <table class="table table-bordered table-striped table-hover align-middle">
+          <thead class="table-dark text-center sticky-top">
+            <tr>
+              <th>Addl</th>
+              <th>Barcode</th>
+              <th>Item Name</th>
+              <th>Size</th>
+              <th>Brand</th>
+              <th>Section</th>
+              <th>MRP</th>
+              <th>Stock Count</th>
+              <th>Scanning Count</th>
+              <th>Difference</th>
+            </tr>
+          <tbody>
             {% for row in result %}
             <tr>
               <td>{{ row.EANCODE }} </td>
@@ -178,13 +178,16 @@
             </tr>
             {% endfor %}
           </tbody>
-    </table>
-  </div>
-</div>
-<br>
+        </table>
+      </div>
+    </div>
+    <br>
     <div class="container mb-3">
-      <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
-
+      <form action="" method="post">
+        {% csrf_token %}
+        <input type="download" name="download" value="download" style="display: none;">
+        <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
+      </form>
     </div>
 
 
@@ -217,19 +220,19 @@
 
     }
     window.onload = displayStatus;
-// Download table data
- function downloadTable() {
-  var table = document.querySelector("table").outerHTML;
+    // Download table data
+    // function downloadTable() {
+    //   var table = document.querySelector("table").outerHTML;
 
-  // Fix for Barcode column (force Excel to treat as text)
-  table = table.replace(/<td>(\d+)<\/td>/g, "<td style='mso-number-format:\\@'>$1</td>");
+    //   // Fix for Barcode column (force Excel to treat as text)
+    //   table = table.replace(/<td>(\d+)<\/td>/g, "<td style='mso-number-format:\\@'>$1</td>");
 
-  var blob = new Blob([table], {type: "application/vnd.ms-excel"});
-  var link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "table_data.xls";
-  link.click();
-}
+    //   var blob = new Blob([table], { type: "application/vnd.ms-excel" });
+    //   var link = document.createElement("a");
+    //   link.href = URL.createObjectURL(blob);
+    //   link.download = "table_data.xls";
+    //   link.click();
+    // }
     function copyText(icon, text) {
       navigator.clipboard.writeText(text).then(() => {
         // Change icon color
