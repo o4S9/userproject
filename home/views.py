@@ -497,17 +497,19 @@ def upload_scanning(request):
     scanRec = loctionRecords.objects.all()
     return render(request,'importScanningFIle.html',{'display':scanRec})
 def downloadScan(request):
-    scanRec = loctionRecords.objects.all()
+    scanRec = loctionRecords.objects.all().values()
+    # lis = list(scanRec)
+    # print(lis)
     if request.method == "POST":
         download = request.POST.get('download') 
         # print(download)
-        if download == "":
+        if download == "download":
             data = list(scanRec)   # result is your queryset with annotate()
             # Load into Pandas
             df = pd.DataFrame(data)
             # print(df)
             # Specify download path (example for Windows)
-            download_path = r"C:/Users/Onkar/Downloads/StockVScanningData.xlsx"
+            download_path = r"C:/Users/Onkar/Downloads/ScanningData.xlsx"
             # # Make sure directory exists
             os.makedirs(os.path.dirname(download_path), exist_ok=True)
             # # Save to Excel
