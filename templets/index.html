@@ -11,6 +11,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+
     }
 
     .sidebar {
@@ -94,9 +95,9 @@
     <a href="/master">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
     <a href="/scanner">📷 Scanning-File</a>
-    <a href="/dataEnter">🔄 Difference (Stock & Scan)</a>
-    <a href="">📉 Short-File</a>
-    <a href="">📈 Excess-File</a>
+    <a href="/ss">🔄 Difference (Stock & Scan)</a>
+    <a href="/short">📉 Short-File</a>
+    <a href="/excess">📈 Excess-File</a>
     <a href="">🧾 SIExcess-File</a>
     <a href="/logout">🔓 Logout</a>
   </div>
@@ -142,91 +143,88 @@
             <h5 class="card-title text-warning">Scanning File</h5>
             {% if Sccount %}
             <p class="display-6 fw-bold">{{Sccount}}</p>
-            {% endif %} 
+            {% endif %}
             <span class="text-muted">Scanned Items</span>
+          </div>
+        </div>
+      </div>
+      <!-- Excess File Data Count -->
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title text-success">Excess-Record Count</h5>
+            {% if Ecount %}
+            <p class="display-6 fw-bold">{{Ecount}}</p>
+            {% endif %}
+            <span class="text-muted">Items in Excess File</span>
           </div>
         </div>
       </div>
     </div>
 
-    {% comment %} Artical Show {% endcomment %}
+    {% comment %} 🔹 Search / Filter Form {% endcomment %}
     <div class="container mt-4">
-
       <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-        <table class="table table-striped table-bordered" style=" margin-top: 15px;">
-          <thead class="table-dark " style=" position: sticky; top: 0; background: white; z-index: 2; ">
-            <tr>
-              <th>Item Code</th>
-              <th>Item Name</th>
-              <th>Show Detials</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            <form method="post" action="/">
-              {% csrf_token %}
+        <form method="post" action="/" class="mb-0">
+          {% csrf_token %}
+          <table class="table table-striped table-bordered" style="margin-top: 15px;">
+            <thead class="table-dark" style="position: sticky; top: 0; z-index: 2;">
               <tr>
-                <th><label for="addl">ADDL :</label>
-                  <input type="text" name="addl" id="addl">
-                </th>
-                <th><label for="itename">Item Name :</label>
-                  <input type="text" name="itename" id="itename">
-                </th>
-                <th>
-                  <button>Show</button>
-                </th>
+                <th>Item Code</th>
+                <th>Item Name</th>
+                <th>Show Details</th>
               </tr>
-            </form>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <label for="addl" class="form-label">ADDL:</label>
+                  <input type="text" name="addl" id="addl" class="form-control">
+                </td>
+                <td>
+                  <label for="itename" class="form-label">Item Name:</label>
+                  <input type="text" name="itename" id="itename" class="form-control">
+                </td>
+                <td>
+                  <button type="submit" class="btn btn-primary w-100">Show</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
       </div>
     </div>
-    {% comment %} Show Card {% endcomment %}
+
+    {% comment %} 🔹 Card Layout for Items {% endcomment %}
     <div class="container mt-4">
+      <div class="row g-4">
+        {% for item in masterProducts %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card product-card h-100 shadow-sm">
+            <div class="card-header fw-bold text-center">
+              {{ item.ITEMNAME }}<i class="fa-regular fa-copy copy-icon" onclick="copyText(this,'{{ item.ITEMNAME }}')"></i>
+            </div>
+            <div class="card-body small">
+              <p><strong>Date:</strong> {{ item.my_date }}</p>
+              <p><strong>ADDL:</strong> {{ item.ADDL }}
+                <i class="fa-regular fa-copy copy-icon" onclick="copyText(this,'{{ item.ADDL }}')"></i>
+              </p>
+              <p><strong>Item Code:</strong> {{ item.ITEMCODE }}
 
-      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-        <table class="table table-striped table-bordered" style=" margin-top: 15px;">
-          <thead class="table-dark " style=" position: sticky; top: 0; background: white; z-index: 2; ">
-            <tr>
-
-
-            </tr>
-          </thead>
-          <tbody>
-
-            <tr>
-              <div class="container py-4">
-                <div class="row g-4">
-                  {% for item in masterProducts %}
-                  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="card product-card">
-                      <div class="card-header">
-                        {{ item.ITEMNAME }}
-                      </div>
-                      <div class="card-body">
-                        <p><strong>Date:</strong> {{ item.my_date }}</p>
-                        <p><strong>ADDL:</strong> {{ item.ADDL }}</p>
-                        <p><strong>Item Code:</strong> {{ item.ITEMCODE }}</p>
-                        <p><strong>Size:</strong> {{ item.SIZE }}</p>
-                        <p><strong>MRP:</strong> ₹{{ item.MRP }}</p>
-                        <p><strong>Brand:</strong> {{ item.BRANDNAME }}</p>
-                        <p><strong>Section:</strong> {{ item.SECTION }}</p>
-                        <p><strong>Basic Rate:</strong> ₹{{ item.BASICRATE }}</p>
-                        <p><strong>Season:</strong> {{ item.SEASON }}</p>
-                        <p><strong>Colours:</strong> {{ item.COLOURS }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  {% endfor %}
-                </div>
-
-            </tr>
-            </form>
-          </tbody>
-        </table>
+              </p>
+              <p><strong>Size:</strong> {{ item.SIZE }}</p>
+              <p><strong>MRP:</strong> ₹{{ item.MRP }}</p>
+              <p><strong>Brand:</strong> {{ item.BRANDNAME }}</p>
+              <p><strong>Section:</strong> {{ item.SECTION }}</p>
+              <p><strong>Basic Rate:</strong> ₹{{ item.BASICRATE }}</p>
+              <p><strong>Season:</strong> {{ item.SEASON }}</p>
+              <p><strong>Colours:</strong> {{ item.COLOURS }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
       </div>
     </div>
-
 
   </div>
 
@@ -246,7 +244,20 @@
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("active");
       overlay.classList.remove("active");
-    }); 
+    });
+    function copyText(icon, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Change icon color
+        icon.style.color = "green";
+
+        // Reset back after 1 second
+        setTimeout(() => {
+          icon.style.color = "";
+        }, 1000);
+
+      });
+    }
+
   </script>
 
 </body>

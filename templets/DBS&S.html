@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Audit-Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+
+    }
+
+    .sidebar {
+      height: 100vh;
+      background-color: #1f2937;
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      width: 250px;
+      transition: all 0.3s;
+      z-index: 1050;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 20px;
+      font-size: 16px;
+    }
+
+    .sidebar a:hover {
+      background-color: #374151;
+      border-radius: 5px;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    /* Hide sidebar and shift content for small screens */
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -250px;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        top: 0;
+        left: 0;
+        z-index: 1040;
+      }
+
+      .overlay.active {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Toggle Button (hamburger) -->
+  <nav class="navbar bg-dark d-md-none">
+    <div class="container-fluid">
+      <button class="btn btn-outline-light" id="menu-toggle">☰</button>
+      <span class="navbar-brand mb-0 h1 text-white">Audit-Manager</span>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h4 class="text-start">Audit-Manager</h4>
+    <h5>Welcome {{request.user}}</h5>
+    <hr style="border-color: rgba(255, 255, 255, 0.2)">
+    <a href="/">🏠 Home</a>
+    <a href="/master">📁 Master-File</a>
+    <a href="/upload/">📦 Stock-File</a>
+    <a href="/scanner">📷 Scanning-File</a>
+    <a href="/ss">🔄 Difference (Stock & Scan)</a>
+    <a href="/short">📉 Short-File</a>
+    <a href="/excess">📈 Excess-File</a>
+    <a href="">🧾 SIExcess-File</a>
+    <a href="/logout">🔓 Logout</a>
+  </div>
+
+  <!-- Mobile overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Main content -->
+
+  <!-- Content -->
+  <div class="main-content">
+    <div class="row justify-content-center">
+      <h2 class="mb-4 text-center">📊 Stock vs Scanning <div id="output"></div> Records</h2>
+    </div>
+
+    <div class="container py-4">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card shadow-sm p-3">
+            <h5 class="mb-3">Select Status</h5>
+
+            <form method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="status" class="form-label">Choose Status:</label>
+                <select id="status" name="status" class="form-select">
+                  <option value="all">All</option>
+                  <option value="short">Short</option>
+                  <option value="excess">Excess</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" onclick="ls()">Apply</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+ <!-- Table Section -->
+<div class="container-fluid py-3">
+  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped table-hover align-middle">
+      <thead class="table-dark text-center sticky-top">
+        <tr>
+          <th>Addl</th>
+          <th>Barcode</th>
+          <th>Article No</th>
+          <th>Size</th>
+          <th>Brand</th>
+          <th>Section</th>
+          <th>MRP</th>
+          <th>Stock Count</th>
+          <th>Scanning Count</th>
+          <th>Difference</th>
+        </tr>
+     <tbody>
+            {% for row in result %}
+            <tr>
+              <td>{{ row.EANCODE }} </td>
+              <td>{{ row.BARCODE }} </td>
+              <td>{{ row.ITEMNAME }} </td>
+              <td>{{ row.SIZE }}</td>
+              <td>{{ row.BRAND }}</td>
+              <td>{{ row.SECTION }}</td>
+              <td>{{ row.MRP }}</td>
+              <td class="text-center">{{ row.home_stockdata }} </td>
+              <td class="text-center">{{ row.home_loctionrecords }}</td>
+              <td class="text-center">
+                {% if row.difference > 0 %}
+                <span class="text-success fw-bold">{{ row.difference }}</span>
+                {% elif row.difference < 0 %} <span class="text-danger fw-bold">{{ row.difference }}</span>
+                  {% else %}
+                  <span class="text-secondary">0</span>
+                  {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+    </table>
+  </div>
+</div>
+<br>
+    <div class="container mb-3">
+      <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
+
+    </div>
+
+
+  </div>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const toggle = document.getElementById("menu-toggle");
+
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+      overlay.classList.toggle("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+    function ls() {
+      let status = document.getElementById("status").value;
+      localStorage.setItem("Status", status);
+      displayStatus();
+    }
+    function displayStatus() {
+      let storedName = localStorage.getItem("Status");
+      // document.getElementById("myInput").value = localStorage.getItem("Status");
+      document.getElementById("output").innerText = storedName;
+
+    }
+    window.onload = displayStatus;
+// Download table data
+ function downloadTable() {
+  var table = document.querySelector("table").outerHTML;
+
+  // Fix for Barcode column (force Excel to treat as text)
+  table = table.replace(/<td>(\d+)<\/td>/g, "<td style='mso-number-format:\\@'>$1</td>");
+
+  var blob = new Blob([table], {type: "application/vnd.ms-excel"});
+  var link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "table_data.xls";
+  link.click();
+}
+    function copyText(icon, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Change icon color
+        icon.style.color = "green";
+
+        // Reset back after 1 second
+        setTimeout(() => {
+          icon.style.color = "";
+        }, 1000);
+
+      });
+    }
+
+  </script>
+
+</body>
+
+</html>
+
+
+
+</body>
+
+</html>

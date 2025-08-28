@@ -40,17 +40,24 @@ class location(models.Model):
     loc_vise = models.CharField(max_length=200)
     def __str__(self):
         return self.loc_vise
+    
+class scanningFile(models.Model):
+    file = models.FileField(upload_to="scanningFile")
 
 class loctionRecords(models.Model):
     my_date = models.DateField(auto_now_add=True)  # Stores only the date
     loc_rec = models.CharField(max_length=200, default="Not Assigned", null=True, blank=True)
-    add_item_list = models.CharField(max_length=200, default="Not Soire", null=True, blank=True)
+    add_item_list = models.CharField(max_length=200, default="0", null=True, blank=True)
 
 class ExcessRecordScanning(models.Model):
     my_date = models.DateField(auto_now_add=True)  # Stores only the date
     loc_rec = models.CharField(max_length=200, default="Not Assigned", null=True, blank=True)
     add_item_list = models.CharField(max_length=200, default="Not Soire", null=True, blank=True)
 
+class ExcessScanning(models.Model):
+    my_date = models.DateField(auto_now_add=True)  # Stores only the date
+    loc_rec = models.CharField(max_length=200, default="Not Assigned", null=True, blank=True)
+    add_item_list = models.CharField(max_length=200, default="Not Soire", null=True, blank=True)
 
 
 class File(models.Model):
@@ -113,4 +120,4 @@ class StockData(models.Model):
     CLOSINGVALUEMRP =models.CharField(max_length=200)
     GODOWNNAME	    =models.CharField(max_length=200)
     ITEMNAME_SHADESHORTNAME_PACKGROUPNAME =models.CharField(max_length=200)
-    SCANNINGDATA    = models.CharField(max_length=255, default='Short')
+

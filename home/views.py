@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.template import loader
+from django.db.models import Count, OuterRef, Subquery,F,IntegerField
 
 
 # user password Onkar$$$***000
@@ -19,28 +20,34 @@ def index(request):
    addl = None
    itename = None
    if request.user.is_anonymous:
-        # addl = request.POST.get('addl')  
-        # contact = Barcode(addl)
-        # contact.save()
         return redirect('/login') 
    MasterCount = MasterData.objects.exclude(ADDL = True).count()
    StockCount = StockData.objects.exclude(BARCODE = True).count()
    ScanningCount = loctionRecords.objects.exclude(add_item_list = True).count()
+   ExcessCount = ExcessRecordScanning.objects.exclude(add_item_list = True).count()
+#    print(MasteRec)
    if request.method == "POST":
        addl = request.POST.get("addl")
        itename = request.POST.get("itename")
    if addl:
        master = MasterData.objects.filter(ADDL = addl).values()
     #    print(master)
-       return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,})
+       return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,"Ecount":ExcessCount})
    elif itename:
-       master = MasterData.objects.filter(ADDL = addl).values()
-       return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,})
+       print(itename)
+       master = MasterData.objects.filter(ITEMNAME = itename).values()
+       return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,"Ecount":ExcessCount})
+
+#    Short List Item
+
    return render(request, 'index.html',{
        "Count":MasterCount,
        "Scount":StockCount,
-       "Sccount":ScanningCount,       
+       "Sccount":ScanningCount,  
+       "Ecount":ExcessCount     
        }) 
+    
+
 
 def loginuser(request):
     if request.method == "POST":
@@ -179,48 +186,108 @@ def dataEntry(request):
     # selected_code1 = None
     # loc = location.objects.values_list('id', flat=True).distinct()
 
-        # print(i)
-    # if request.method == "POST":
-    #     addl = request.POST.get('addl')
-    #     selected_code1 = request.POST.get('loca')
-    #     print("CODE 1:",selected_code1)
-    #     print("CODE 1.5:",addl)
-
-       
-    # if request.method == "POST":
-    #     selected_code = request.POST.get('lno')
-    #     print("CODE Location:",selected_code) 
-    #     selected_product = location.objects.filter(loc_vise=selected_code).first()
-    #     print("Loc_vise :",selected_product)
-    #     return render(request,'Data_Entry.html',{'selected_product': selected_product} )
-
-
-      
+    addl = None 
+    loc  = None 
+    lc   = None
     if request.method == "POST":
         loc = request.POST.get("location")
         addl = request.POST.get("addl")
+        lc = request.POST.get("lc")
+        cb = request.POST.get('cb')
+        ub = request.POST.get('ub')
+        # print(cb,ub)
         # print("Loc & Addl: ",loc,addl)
-        Selected_barcode = StockData.objects.filter(BARCODE=addl).first()
-        Selected_barcode_Master = MasterData.objects.filter(ITEMCODE = addl).first()
+        Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
+        Selected_barcode_Master = MasterData.objects.filter(ADDL = addl).first()
         # print(Selected_barcode)
-        if Selected_barcode:
-            barcode = StockData(SCANNINGDATA = addl)
+        displayBarcode = loctionRecords.objects.all().values()
+        if addl == '':
+            messages.success(request, "Please enter a barcode!")
+        elif Selected_barcode:
+            # barcode = StockData(scanningdata_id = addl)
             barData = loctionRecords(loc_rec = loc,add_item_list = addl)
-            barcode.save()
+            location_count = loctionRecords.objects.exclude(loc_rec = loc).count()
+            dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+            # barcode.save()
             barData.save()
+            
+            # print(displayBarcode)
+            if Selected_barcode:
+                location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+                result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
+                home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
+                # return render(request,'DBS&S.html',{"result":result})
+            elif displayBarcode:
+                # print(displayBarcode) 
+                pass               
             return redirect('/dataEnter')
+
         elif Selected_barcode_Master:
             ser = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
+            dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
             ser.save()
+            if Selected_barcode_Master:
+                location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+                result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
+                home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
+                # return render(request,'DBS&S.html',{"result":result})
             return redirect('/dataEnter')
+        elif lc:
+            location_count = loctionRecords.objects.filter(loc_rec=lc).count() 
+            dispaly = loctionRecords.objects.filter(loc_rec = lc).values()
+            # print(dispaly)
+            return render(request ,'Data_Entry.html',{"lCount":location_count,'display': dispaly})
+        elif ub != "" and cb != "":
+            # print(cb,ub)
+            try:
+                record = loctionRecords.objects.get( add_item_list=cb)
+                record.add_item_list = ub
+                record.save()
+                # print(loc)
+                # dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+                msg = "✅ Barcode updated successfully!"
+                messages.success(request, msg) 
+                return render(request ,'Data_Entry.html')            
+
+            except StockData.DoesNotExist:
+                msg1 = "❌ Record not found!"
+                messages.success(request, msg1)            
+
         else:
             # print("Barecode Not Match!")
-            messages.success(request, "This Product Not in your Stock...")
+            EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
+            EBSc.save()             
+            messages.success(request, "This is a Invalid Barcode")            
+            # mr = MasterData.objects.filter(ITEMCODE = dlr).values()
+            # print("Scanning REc :",mr)
+           
+            location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+            result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
+            home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
+            
             return redirect('/dataEnter')
 
-        
-
-    return render(request,'Data_Entry.html')
+        # if request.method == 'POST':
+        #     cb = request.POST.get('cb')
+        #     ub = request.POST.get('ub')
+        #     print(cb,ub)
+    # location_count = loctionRecords.objects.filter(
+    # add_item_list=OuterRef('BARCODE')
+    # ).values('add_item_list').annotate(
+    #     c=Count('id')
+    # ).values('c')
+    # result = StockData.objects.values('BARCODE').annotate(
+    #     home_stockdata=Count('BARCODE'),
+    #     home_loctionrecords=Subquery(location_count, output_field=models.IntegerField())
+    # ).annotate(
+    #     difference=F('home_loctionrecords') - F('home_stockdata')
+    # )
+    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+    result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
+    home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
+    dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+    # print(dispaly)
+    return render(request,'Data_Entry.html',{'display': dispaly})
 
 
 # def locSet(request):
@@ -381,16 +448,52 @@ def main(request):
         create_bd(obj.file)
     return render(request,'upload.html')
 
-
-
-# create_bd("files\Andheri_SCANNING_SHEET_17-07-25_NqlRATL.xlsx") 
-
-# def master(request):
+# def create_bdsc(file_path):
+#     filePath = file_path
+#     df = pd.read_excel(filePath)
+#     # print(df)
+#     list_of_csv = [list(row) for row in df.values]
+#     # today =  datetime.today().date()
+#     # list_of_csv = [list(row) for row in df.values]
+#     # print(list_of_csv)
+#     # for l in list_of_csv:
+#     #     print(l)
+#         # loctionRecords.objects.create(      
+#         #     BRANCHCODE	                             = l[0],
+        
+#         # )
+# def scan(request):
 #     if request.method == "POST":
 #         file = request.FILES['file'] 
-#         File.objects.create(file = file)
-#         # create_bd(obj.file)
-#     return render(request,'masterImport.html')
+#         obj  = scanningFile.objects.create(file = file)
+#         # print(obj)
+#         create_bdsc(obj.file)
+#         return redirect("/scan")
+#     return render(request,'importScanningFIle.html')
+
+def createScan_bd(file_path):
+    filePath = file_path
+    df = pd.read_excel(filePath)
+    # print(df)
+    list_of_csv = [list(row) for row in df.values]
+    # today =  datetime.today().date()
+    for l in list_of_csv:
+        loctionRecords.objects.create(
+        loc_rec         = l[0],
+        add_item_list = l[1],
+        )
+
+def upload_scanning(request):
+    if request.method == "POST":
+        file = request.FILES['file'] 
+        # fl = ["Master File :",file,]
+        obj  = scanningFile.objects.create(file = file)
+        createScan_bd(obj.file)
+        return redirect('/scan')
+
+        # obj  = File.objects.create(file = file)
+        # createMaster_bd(obj.file)
+    return render(request,'importScanningFIle.html')
 
 def createMaster_bd(file_path):
     filePath = file_path
@@ -445,3 +548,103 @@ def scannerFile(request):
 # user view 
 def userView(request):
     return render(request, "userView.html")
+import os
+from django.db.models.functions import Coalesce
+from django.db.models import OuterRef, Subquery, Count, F, IntegerField, Value,Sum,ExpressionWrapper
+def differencSS(request):
+    status = None
+    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+        # Step 1 → Aggregate sum of stock, explicitly as Integer
+    qs = StockData.objects.values(
+        'EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND','SECTION', 'MRP'
+    ).annotate(
+        stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),   # force numeric
+        home_loctionrecords=Subquery(location_count, output_field=IntegerField())
+    )
+
+    # Step 2 → Wrap with Coalesce and compute difference safely
+    result = qs.annotate(
+        home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+        home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
+        difference=ExpressionWrapper(
+            F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+            output_field=IntegerField()  # enforce integer output
+        )
+    )
+    # RESULT1
+    result1 = qs.annotate(
+        home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+        home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
+        difference=ExpressionWrapper(
+            F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+            output_field=IntegerField()  # enforce integer output
+        )
+    ).filter(difference__lt=0)  # 👈 correct way 
+    result2 = qs.annotate(
+    home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+    home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
+    difference=ExpressionWrapper(
+        F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+        output_field=IntegerField()  # enforce integer output
+    )
+    ).filter(difference__gt=0)  # 👈 correct way 
+    # df = pd.DataFrame(list(result))
+    # print(result)
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        if status == 'all':
+            return render(request,'DBS&S.html',{"result":result,})
+        elif status == 'short':
+            return render(request,'DBS&S.html',{"result":result1,})
+        elif status == 'excess':
+            return render(request,'DBS&S.html',{"result":result2,})
+        else:
+            pass
+            # print(status)
+
+         # Get user Downloads path (works on Windows, Linux, Mac)
+    # downloads_path = os.path.join(os.path.expanduser("C:\Users\Onkar"), "\Downloads")
+
+    # # Save as Excel
+    # file_path = os.path.join(downloads_path, "stock_scanning_diff_data.xlsx")
+    # df.to_excel(file_path, index=False)
+    df = pd.DataFrame(list(result))
+    # if df:
+    #     # --- Export to Excel directly in response ---
+    #     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    #     response['Content-Disposition'] = 'attachment; filename="stock_data.xlsx"'
+    #     df.to_excel(response, index=False)
+    #     return response
+
+    return render(request,'DBS&S.html')
+
+def short(request):
+    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+    result1 = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate(home_stockdata=Count('EANCODE'),
+    home_loctionrecords=Coalesce(
+        Subquery(location_count, output_field=IntegerField()), 
+        Value(0)  # replace NULL with 0
+    )
+    ).annotate(
+            difference=F('home_loctionrecords') - F('home_stockdata')
+    ).filter(difference__lt=0)  # 👈 correct way 
+     
+    
+    return render(request, "shortFile.html",{"result":result1,}) 
+
+def excess(request):
+    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+    result2 = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate(home_stockdata=Count('EANCODE'),
+    home_loctionrecords=Coalesce(
+        Subquery(location_count, output_field=IntegerField()), 
+        Value(0)  # replace NULL with 0
+    )
+    ).annotate(
+            difference=F('home_loctionrecords') - F('home_stockdata')
+    ).filter(difference__gt=0)  # 👈 correct way 
+    # res = StockData.objects.values('BARCODE','ITEMNAME','SIZE','SECTION','MRP')
+    # df = pd.DataFrame(list(res))
+    # print(df)
+
+    
+    return render(request, "excess.html",{"result":result2,}) 
