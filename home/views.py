@@ -22,7 +22,8 @@ def index(request):
    if request.user.is_anonymous:
         return redirect('/login') 
    MasterCount = MasterData.objects.exclude(ADDL = True).count()
-   StockCount = StockData.objects.exclude(BARCODE = True).count()
+   StockCount = StockData.objects.exclude(BARCODE = True).aggregate(
+    total=Sum('CLOSINGSTOCK') )['total']
    ScanningCount = loctionRecords.objects.exclude(add_item_list = True).count()
    ExcessCount = ExcessRecordScanning.objects.exclude(add_item_list = True).count()
 #    print(MasteRec)
@@ -190,11 +191,11 @@ def dataEntry(request):
     loc  = None 
     lc   = None
     if request.method == "POST":
-        loc = request.POST.get("location")
+        loc  = request.POST.get("location")
         addl = request.POST.get("addl")
-        lc = request.POST.get("lc")
-        cb = request.POST.get('cb')
-        ub = request.POST.get('ub')
+        lc   = request.POST.get("lc")
+        cb   = request.POST.get('cb')
+        ub   = request.POST.get('ub')
         # print(cb,ub)
         # print("Loc & Addl: ",loc,addl)
         Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
@@ -489,11 +490,29 @@ def upload_scanning(request):
         # fl = ["Master File :",file,]
         obj  = scanningFile.objects.create(file = file)
         createScan_bd(obj.file)
+       
         return redirect('/scan')
-
-        # obj  = File.objects.create(file = file)
-        # createMaster_bd(obj.file)
-    return render(request,'importScanningFIle.html')
+     
+      
+    scanRec = loctionRecords.objects.all()
+    return render(request,'importScanningFIle.html',{'display':scanRec})
+def downloadScan(request):
+    if request.method == "POST":
+        download = request.POST.get('download') 
+        if download == "":
+            data = list(scanRec)   # result is your queryset with annotate()
+            # Load into Pandas
+            df = pd.DataFrame(data)
+            print(df)
+            # Specify download path (example for Windows)
+            # download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
+            # # Make sure directory exists
+            # os.makedirs(os.path.dirname(download_path), exist_ok=True)
+            # # Save to Excel
+            # df.to_excel(download_path, index=False)
+    
+    scanRec = loctionRecords.objects.all()
+    return render(request,'importScanningFIle.html',{'display':scanRec})
 
 def createMaster_bd(file_path):
     filePath = file_path
@@ -624,27 +643,40 @@ def differencSS(request):
 
 def short(request):
     location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
-    result1 = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate(home_stockdata=Count('EANCODE'),
-    home_loctionrecords=Coalesce(
-        Subquery(location_count, output_field=IntegerField()), 
-        Value(0)  # replace NULL with 0
-    )
+    qs = StockData.objects.values(
+        'EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND','SECTION', 'MRP'
     ).annotate(
-            difference=F('home_loctionrecords') - F('home_stockdata')
-    ).filter(difference__lt=0)  # 👈 correct way 
+        stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),   # force numeric
+        home_loctionrecords=Subquery(location_count, output_field=IntegerField())
+    )
+ # RESULT1
+    result1 = qs.annotate(
+        home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+        home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
+        difference=ExpressionWrapper(
+            F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+            output_field=IntegerField()  # enforce integer output
+        )
+    ).filter(difference__lt=0)  # 👈 correct way  
      
     
     return render(request, "shortFile.html",{"result":result1,}) 
 
 def excess(request):
     location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
-    result2 = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate(home_stockdata=Count('EANCODE'),
-    home_loctionrecords=Coalesce(
-        Subquery(location_count, output_field=IntegerField()), 
-        Value(0)  # replace NULL with 0
-    )
+    qs = StockData.objects.values(
+        'EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND','SECTION', 'MRP'
     ).annotate(
-            difference=F('home_loctionrecords') - F('home_stockdata')
+        stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),   # force numeric
+        home_loctionrecords=Subquery(location_count, output_field=IntegerField())
+    )
+    result2 = qs.annotate(
+    home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+    home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
+    difference=ExpressionWrapper(
+        F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+        output_field=IntegerField()  # enforce integer output
+    )
     ).filter(difference__gt=0)  # 👈 correct way 
     # res = StockData.objects.values('BARCODE','ITEMNAME','SIZE','SECTION','MRP')
     # df = pd.DataFrame(list(res))

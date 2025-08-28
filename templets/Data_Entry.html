@@ -115,6 +115,8 @@
         <hr style="border-color: rgba(255, 255, 255, 0.2)">
         <a href="/">🏠 Home</a>
         <a href="/scanner">📷 Scanning-File</a>
+        <a href="/scan">📷 Scanning-Record</a>
+
 
     </div>
 
@@ -259,14 +261,14 @@
                                     {% csrf_token %}
                                    
                                     <div class="mb-3">
-                                        <label for="cb" class="form-label">Enter a Barcode:</label>
+                                        <label for="cb" class="form-label">Enter a Addl:</label>
                                         <input type="text" name="cb" id="bc" class="form-control"
-                                            placeholder="Barcode ...">
+                                            placeholder="Addl ...">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="ub" class="form-label">Enter Update Barcode:</label>
+                                        <label for="ub" class="form-label">Enter Update Addl:</label>
                                         <input type="text" name="ub" id="ub" class="form-control"
-                                            placeholder="Update Barcode ...">
+                                            placeholder="Update Addl ...">
                                     </div>
                                     <button type="submit" class="btn btn-success w-100">Update</button>
                                 </form>

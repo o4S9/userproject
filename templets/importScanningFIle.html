@@ -81,21 +81,17 @@
     </div>
   </nav>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <h4 class="text-start">Audit-Manager</h4>
-    <h5>Welcome {{request.user}}</h5>
-    <hr style="border-color: rgba(255, 255, 255, 0.2)">
-    <a href="/">🏠 Home</a>
-    <a href="/master" onclick="Master_File()">📁 Master-File</a>
-    <a href="/upload/">📦 Stock-File</a>
-    <a href="/scanner">📷 Scanning-File</a>
-  <a href="/ss">🔄 Difference (Stock & Scan)</a>
-  <a href="/short">📉 Short-File</a>
-  <a href="/excess">📈 Excess-File</a>
-  <a href="">🧾 SIExcess-File</a>
-  <a href="/logout">🔓 Logout</a>
-  </div>
+     <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h4 class="text-start">Audit-Manager</h4>
+        <h5>Welcome {{request.user}}</h5>
+        <hr style="border-color: rgba(255, 255, 255, 0.2)">
+        <a href="/">🏠 Home</a>
+        <a href="/scanner">📷 Scanning-File</a>
+        <a href="/scan">📷 Scanning-Record</a>
+
+
+    </div>
 
  <!-- Main Content -->
   <div class="main-content">
@@ -109,7 +105,48 @@
         </div>
         <button class="btn btn-primary" type="submit">Import</button>
     </form>
-</div>
+</div><br>
+    <!-- Table Section -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+
+            <!-- Table Wrapper (scrollable) -->
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Location No</th>
+                            <th scope="col">ADDL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in display %}
+                        <tr>
+                            <td>{{ row.id }}</td>
+                            <td>{{ row.my_date }}</td>
+                            <td>{{ row.loc_rec }}</td>
+                            <td>{{ row.add_item_list }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No records found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <!-- Download Button -->
+   <div class="container mb-3">
+      <form action="" method="post">
+        {% csrf_token %}
+        <input type="download" name="download" value="download" style="display: none;">
+        <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
+      </form>
+    </div>
 </div>
   <script >
    const sidebar = document.getElementById("sidebar");
