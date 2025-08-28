@@ -609,7 +609,6 @@ def differencSS(request):
             download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
             # Make sure directory exists
             os.makedirs(os.path.dirname(download_path), exist_ok=True)
-
             # Save to Excel
             df.to_excel(download_path, index=False)
             # print(f"File saved to: {download_path}")
