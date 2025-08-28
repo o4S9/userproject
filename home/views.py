@@ -497,22 +497,23 @@ def upload_scanning(request):
     scanRec = loctionRecords.objects.all()
     return render(request,'importScanningFIle.html',{'display':scanRec})
 def downloadScan(request):
+    scanRec = loctionRecords.objects.all()
     if request.method == "POST":
         download = request.POST.get('download') 
+        # print(download)
         if download == "":
             data = list(scanRec)   # result is your queryset with annotate()
             # Load into Pandas
             df = pd.DataFrame(data)
-            print(df)
+            # print(df)
             # Specify download path (example for Windows)
-            # download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
+            download_path = r"C:/Users/Onkar/Downloads/StockVScanningData.xlsx"
             # # Make sure directory exists
-            # os.makedirs(os.path.dirname(download_path), exist_ok=True)
+            os.makedirs(os.path.dirname(download_path), exist_ok=True)
             # # Save to Excel
-            # df.to_excel(download_path, index=False)
+            df.to_excel(download_path, index=False)
     
-    scanRec = loctionRecords.objects.all()
-    return render(request,'importScanningFIle.html',{'display':scanRec})
+    return render(request,'downloadScanningData.html',{'display':scanRec})
 
 def createMaster_bd(file_path):
     filePath = file_path

@@ -87,8 +87,7 @@
         <h5>Welcome {{request.user}}</h5>
         <hr style="border-color: rgba(255, 255, 255, 0.2)">
         <a href="/">🏠 Home</a>
-        <a href="/scanner">📷 Scanning-File</a>
-        <a href="/scan">📷 Scanning-Record</a>
+        <a href="/scand">📷Download-Scanning-File</a>
 
 
     </div>
@@ -96,16 +95,8 @@
  <!-- Main Content -->
   <div class="main-content">
   <div class="container">
-    <h2 class="mb-4">Upload-Scanning Excel File</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="excel_file" class="form-label">Select-Scanning Excel File</label>
-            <input class="form-control" type="file" id="excel_file" name="file" accept=".xls,.xlsx,.csv" required>
-        </div>
-        <button class="btn btn-primary" type="submit">Import</button>
-    </form>
-</div><br>
+    <h2 class="mb-4">Download-Scanning Excel File</h2>
+   
     <!-- Table Section -->
     <div class="card shadow-lg border-0">
         <div class="card-body">
@@ -139,7 +130,14 @@
             </div>
 
         </div>
-      
+        <!-- Download Button -->
+   <div class="container mb-3">
+      <form action="" method="post">
+        {% csrf_token %}
+        <input type="download" name="download" value="download" style="display: none;">
+        <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
+      </form>
+    </div>
 </div>
   <script >
    const sidebar = document.getElementById("sidebar");

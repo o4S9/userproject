@@ -95,6 +95,7 @@
     <a href="/master">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
     <a href="/scanner">📷 Scanning-File</a>
+    <a href="/scand">📷Download-Scanning-File</a>
     <a href="/ss">🔄 Difference (Stock & Scan)</a>
     <a href="/short">📉 Short-File</a>
     <a href="/excess">📈 Excess-File</a>
@@ -202,7 +203,8 @@
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
           <div class="card product-card h-100 shadow-sm">
             <div class="card-header fw-bold text-center">
-              {{ item.ITEMNAME }}<i class="fa-regular fa-copy copy-icon" onclick="copyText(this,'{{ item.ITEMNAME }}')"></i>
+              {{ item.ITEMNAME }}<i class="fa-regular fa-copy copy-icon"
+                onclick="copyText(this,'{{ item.ITEMNAME }}')"></i>
             </div>
             <div class="card-body small">
               <p><strong>Date:</strong> {{ item.my_date }}</p>
