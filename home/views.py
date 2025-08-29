@@ -255,9 +255,9 @@ def dataEntry(request):
             except StockData.DoesNotExist:
                 msg1 = "❌ Record not found!"
                 messages.success(request, msg1)  
-        elif locationno:
-            msg = "✅ Location Allreday Enterd! Please try someone"
-            messages.success(request, msg)
+        # elif locationno:
+        #     msg = "✅ Location Allreday Enterd! Please try someone"
+        #     messages.success(request, msg)
 
         else:
             # print("Barecode Not Match!")
