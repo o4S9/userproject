@@ -203,13 +203,13 @@ def dataEntry(request):
         elif ub != "" and cb != "":
             # print(cb,ub)
             try:
-                record = loctionRecords.objects.get( add_item_list=cb)
-                record.add_item_list = ub
-                record.save()
+                # record = loctionRecords.objects.get( add_item_list=cb)
+                # record.add_item_list = ub
+                # record.save()
                 # print(loc)
                 # dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
-                msg = "✅ Barcode updated successfully!"
-                messages.success(request, msg) 
+                # msg = "✅ Barcode updated successfully!"
+                # messages.success(request, msg) 
                 return render(request ,'Data_Entry.html')            
 
             except StockData.DoesNotExist:
