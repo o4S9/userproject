@@ -291,15 +291,7 @@ def dataEntry(request):
     return render(request,'Data_Entry.html',{'display': dispaly})
 
 
-# def locSet(request):
-#     if request.method == "POST":
-#         selected_code = request.POST.get('lno')
-#         print("CODE Location:",selected_code)            
-#         selected_product = location.objects.filter(loc_vise=selected_code).first()
-#         print("CODE Location2:",selected_product)  
-#         return redirect("/dataEnter")  
-#     #   
-#     return render(request,'Data_Entry.html')
+
 
 
 def view(request):
@@ -309,10 +301,7 @@ def view(request):
 
     if request.method == "POST":
         selected_code = request.POST.get('lno')
-        # print("CODE 3:",selected_code)
-        # selected_product = location.objects.filter(loc_vise=selected_code).first()
-    #     # # selected_product = location.objects.filter(loc_vise=selected_code).first()
-        # return render(request,'set_location.html',{'selected_code': selected_product})
+  
     return render(request,'view.html',{'loc':loc})
 
 from django.db.models import Count
@@ -479,10 +468,34 @@ def createScan_bd(file_path):
     list_of_csv = [list(row) for row in df.values]
     # today =  datetime.today().date()
     for l in list_of_csv:
-        loctionRecords.objects.create(
-        loc_rec         = l[0],
-        add_item_list = l[1],
-        )
+        loc = l[0]
+        addl = l[1]
+        # print(addl)
+        Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
+        Selected_barcode_Master = MasterData.objects.filter(ADDL = addl).first()
+        # print(Selected_barcode)
+        displayBarcode = loctionRecords.objects.all().values()
+        if addl == '':
+            # print( "Please enter a barcode!")
+            return redirect('/scan')
+        elif Selected_barcode:
+            # print(l)
+            # barcode = StockData(scanningdata_id = addl)
+            barData = loctionRecords(loc_rec = loc,add_item_list = addl)
+            barData.save()
+        elif Selected_barcode_Master:
+            # print("Excess !")
+            ser = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
+            ser.save()
+        else:
+            # print("Not in Your Stock")
+            EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
+            EBSc.save() 
+       
+        # loctionRecords.objects.create(
+        # loc_rec         = l[0],
+        # add_item_list = l[1],
+        # )
 
 def upload_scanning(request):
     if request.method == "POST":
