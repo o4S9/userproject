@@ -202,6 +202,8 @@ def dataEntry(request):
         Selected_barcode_Master = MasterData.objects.filter(ADDL = addl).first()
         # print(Selected_barcode)
         displayBarcode = loctionRecords.objects.all().values()
+        locationno = loctionRecords.objects.filter(loc_rec = loc).first()
+
         if addl == '':
             messages.success(request, "Please enter a barcode!")
         elif Selected_barcode:
@@ -252,7 +254,10 @@ def dataEntry(request):
 
             except StockData.DoesNotExist:
                 msg1 = "❌ Record not found!"
-                messages.success(request, msg1)            
+                messages.success(request, msg1)  
+        elif locationno:
+            msg = "✅ Location Allreday Enterd! Please try someone"
+            messages.success(request, msg)
 
         else:
             # print("Barecode Not Match!")
@@ -452,24 +457,7 @@ def createScan_bd(file_path):
         Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
         Selected_barcode_Master = MasterData.objects.filter(ADDL = addl).first()
         # print(Selected_barcode)
-        location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list')
-            # Step 1 → Aggregate sum of stock, explicitly as Integer
-        qs = StockData.objects.values(
-            'EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND','SECTION', 'MRP'
-        ).annotate(
-            stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),   # force numeric
-            home_loctionrecords=Subquery(location_count, output_field=IntegerField())
-        )
-        print(qs)
-        # Step 2 → Wrap with Coalesce and compute difference safely
-        result = qs.annotate(
-            home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
-            home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
-            difference=ExpressionWrapper(
-                F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
-                output_field=IntegerField()  # enforce integer output
-            )
-        )
+        
         if addl == '':
             # print( "Please enter a barcode!")
             return redirect('/scan')
@@ -580,7 +568,7 @@ def userView(request):
     return render(request, "userView.html")
 import os
 from django.db.models.functions import Coalesce
-from django.db.models import OuterRef, Subquery, Count, F, IntegerField, Value,Sum,ExpressionWrapper
+from django.db.models import OuterRef, Subquery, Count, F, IntegerField, Value,Sum,ExpressionWrapper,Exists
 def differencSS(request):
     status = None
     location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
@@ -649,6 +637,27 @@ def differencSS(request):
 
   
 
+    # Subquery to count records in loctionRecords where add_item_list = StockData.EANCODE
+    # location_count = (
+    #     loctionRecords.objects
+    #     .filter(add_item_list=OuterRef('EANCODE'))
+    #     .values('add_item_list')
+    #     .annotate(c=Count('id'))
+    #     .values('c')
+    # )
+    # print(location_count)
+    # # Filter StockData only where EANCODE exists in loctionRecords
+    # qs1 = (
+    #     StockData.objects
+    #     .annotate(
+    #         stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),
+    #         home_loctionrecords=Subquery(location_count, output_field=IntegerField())
+    #     )
+    #     .filter(Exists(loctionRecords.objects.filter(add_item_list=OuterRef('EANCODE'))))  # ✅ ensures only matching EANCODEs
+    #     .values('EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND', 'SECTION', 'MRP', 'stock_sum', 'home_loctionrecords')
+    # )
+  
+    # print(qs1)
 
     return render(request,'DBS&S.html')
 
