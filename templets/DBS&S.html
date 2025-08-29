@@ -76,7 +76,7 @@
   </style>
 </head>
 
-<body>
+<body onload="displayStatus()">
 
   <!-- Toggle Button (hamburger) -->
   <nav class="navbar bg-dark d-md-none">
@@ -121,6 +121,7 @@
 
             <form method="post">
               {% csrf_token %}
+            
               <div class="mb-3">
                 <label for="status" class="form-label">Choose Status:</label>
                 <select id="status" name="status" class="form-select">
@@ -185,10 +186,29 @@
     <div class="container mb-3">
       <form action="" method="post">
         {% csrf_token %}
-        <input type="download" name="download" value="download" style="display: none;">
+        <input name="download" value="" id="myInput" readonly>
         <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
       </form>
     </div>
+    <!-- <div class="container mb-3"> -->
+    <!-- <form action="" method="post" class="w-100"> -->
+    <!-- {% csrf_token %} -->
+    <!-- <div class="row g-2 align-items-center"> -->
+    <!-- Input -->
+    <!-- <div class="col-8 col-md-10">
+            <input type="download" name="download" value="" id="myInput" readonly class="form-control"
+              placeholder="Download file name...">
+          </div> -->
+
+    <!-- Button -->
+    <!-- <div class="col-4 col-md-2 d-grid">
+            <button type="button" class="btn btn-success" onclick="downloadTable()">
+              📥 Download
+            </button>
+          </div>
+        </div>
+      </form>
+    </div> -->
 
 
   </div>
@@ -214,25 +234,12 @@
       displayStatus();
     }
     function displayStatus() {
-      let storedName = localStorage.getItem("Status");
-      // document.getElementById("myInput").value = localStorage.getItem("Status");
-      document.getElementById("output").innerText = storedName;
+      let storedValue = localStorage.getItem("Status");
+      document.getElementById("myInput").value = storedValue || ""; // avoid null
 
     }
     window.onload = displayStatus;
-    // Download table data
-    // function downloadTable() {
-    //   var table = document.querySelector("table").outerHTML;
 
-    //   // Fix for Barcode column (force Excel to treat as text)
-    //   table = table.replace(/<td>(\d+)<\/td>/g, "<td style='mso-number-format:\\@'>$1</td>");
-
-    //   var blob = new Blob([table], { type: "application/vnd.ms-excel" });
-    //   var link = document.createElement("a");
-    //   link.href = URL.createObjectURL(blob);
-    //   link.download = "table_data.xls";
-    //   link.click();
-    // }
     function copyText(icon, text) {
       navigator.clipboard.writeText(text).then(() => {
         // Change icon color

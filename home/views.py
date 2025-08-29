@@ -133,46 +133,6 @@ def save_barcode(request):
         barcode = request.POST.get('barcode')
         id = request.GET.get('locationInput')  # or request.POST.get('addl') if form is POST
 
-        # print(id,barcode)
-        
-        # print(barcode)
-        # contact = Barcode(barcode)
-        # contact.save()
-        # if id == "":
-        #     return render(request, 'scanner.html')
-        # else:
-        #     if barcode:
-        #         print(barcode,id)
-                # Barcode.objects.get_or_create(id=id,code=barcode)   
-                # records = Barcode.objects.all()
-        
-                # return JsonResponse({'success': True})
-            # if id:
-            #     Barcode.objects.get_or_create(id=id) 
-            #     return render(request, 'scanner.html')
-        # query = request.GET.get('addl', '')  # input name="search"
-        # if query:
-        #     records = YourModel.objects.filter(addl=query)
-        # else:  
-        #     records = YourModel.objects.all()
-
-        # return render(request, 'scanner.html', {'records': records, 'query': query})
-    # barcode = request.GET.get('barcode')  # or request.POST.get('addl') if form is POST
-        # if barcode:
-        #     print('ADDL =',barcode)
-        #     records = YourModel.objects.filter(addl=barcode)
-        #     return render(request, 'view_data.html', {'records': records})
-    # return HttpResponse(template.render(context, request),) 
-    # print(addl_input)
-    # records = YourModel.objects.filter(addl=addl_input)
-        # records = YourModel.objects.filter(addl='8275444939')
-        # return render(request, 'scanner.html',{'records': records})
-
-    
-        # records = YourModel.objects.filter(addl='8275444939')
-        # return render(request, 'scanner.html',{'records': records})
-        # records = Barcode.objects.all()
-        # return render(request, 'scanner.html',{'records': records})
     records = Barcode.objects.all()
     return render(request, 'scanner.html',{'records': records})
    
@@ -288,10 +248,10 @@ def dataEntry(request):
     # ).annotate(
     #     difference=F('home_loctionrecords') - F('home_stockdata')
     # )
-    location_count1 = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list')
-    print(location_count1)
-    result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
-    home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
+    # location_count1 = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list')
+    # print(location_count1)
+    # result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
+    # home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
     dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
     # print(dispaly)
     return render(request,'Data_Entry.html',{'display': dispaly})
@@ -608,8 +568,8 @@ def differencSS(request):
     # print(result)
     if request.method == 'POST':
         status = request.POST.get('status')
-        download = request.POST.get('download')
-        # print(download)
+        # download = request.POST.get('download')
+        # print("Dowmload :",download)
         if status == 'all':
             return render(request,'DBS&S.html',{"result":result,})
         elif status == 'short':
@@ -617,75 +577,58 @@ def differencSS(request):
         elif status == 'excess':
             
             return render(request,'DBS&S.html',{"result":result2,})
-        elif download == 'download':
-            if status == 'all':
-                data = list(result)   # result is your queryset with annotate()
-                # Load into Pandas
-                df = pd.DataFrame(data)
-                # Specify download path (example for Windows)
-                download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
-                # Make sure directory exists
-                os.makedirs(os.path.dirname(download_path), exist_ok=True)
-                # Save to Excel
-                df.to_excel(download_path, index=False)
-                # print(f"File saved to: {download_path}")
-                return redirect('/ss')
-
-            elif status == 'short':
-                data = list(result1)   # result is your queryset with annotate()
-                # Load into Pandas
-                df = pd.DataFrame(data)
-                # Specify download path (example for Windows)
-                download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
-                # Make sure directory exists
-                os.makedirs(os.path.dirname(download_path), exist_ok=True)
-                # Save to Excel
-                df.to_excel(download_path, index=False)
-                # print(f"File saved to: {download_path}")
-                return redirect('/ss')
-
-            elif status == 'excess':
-                data = list(result2)   # result is your queryset with annotate()
-                # Load into Pandas
-                df = pd.DataFrame(data)
-                # Specify download path (example for Windows)
-                download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
-                # Make sure directory exists
-                os.makedirs(os.path.dirname(download_path), exist_ok=True)
-                # Save to Excel
-                df.to_excel(download_path, index=False)
-                # print(f"File saved to: {download_path}")
-                return redirect('/ss')
+    
 
 
-            return redirect('/ss')
         else:
             pass
             # print(status)
 
   
+    if request.method == 'POST':
+        download = request.POST.get('download')
+        # print("Dowmload :",download)
+        if download == 'all':
+            data = list(result)   # result is your queryset with annotate()
+            # Load into Pandas
+            df = pd.DataFrame(data)
+            # Specify download path (example for Windows)
+            download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffAllData.xlsx"
+            # Make sure directory exists
+            os.makedirs(os.path.dirname(download_path), exist_ok=True)
+            # Save to Excel
+            df.to_excel(download_path, index=False)
+            # print(f"File saved to: {download_path}")
+            return redirect('/ss')
 
-    # Subquery to count records in loctionRecords where add_item_list = StockData.EANCODE
-    # location_count = (
-    #     loctionRecords.objects
-    #     .filter(add_item_list=OuterRef('EANCODE'))
-    #     .values('add_item_list')
-    #     .annotate(c=Count('id'))
-    #     .values('c')
-    # )
-    # print(location_count)
-    # # Filter StockData only where EANCODE exists in loctionRecords
-    # qs1 = (
-    #     StockData.objects
-    #     .annotate(
-    #         stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),
-    #         home_loctionrecords=Subquery(location_count, output_field=IntegerField())
-    #     )
-    #     .filter(Exists(loctionRecords.objects.filter(add_item_list=OuterRef('EANCODE'))))  # ✅ ensures only matching EANCODEs
-    #     .values('EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND', 'SECTION', 'MRP', 'stock_sum', 'home_loctionrecords')
-    # )
-  
-    # print(qs1)
+        elif download == 'short':
+            # print(download)
+            data = list(result1)   # result is your queryset with annotate()
+            # Load into Pandas
+            df = pd.DataFrame(data)
+            # Specify download path (example for Windows)
+            download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffShortData.xlsx"
+            # Make sure directory exists
+            os.makedirs(os.path.dirname(download_path), exist_ok=True)
+            # Save to Excel
+            df.to_excel(download_path, index=False)
+            # print(f"File saved to: {download_path}")
+            return redirect('/ss')
+
+        elif download == 'excess':
+            data = list(result2)   # result is your queryset with annotate()
+            # Load into Pandas
+            df = pd.DataFrame(data)
+            # Specify download path (example for Windows)
+            download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffExcessData.xlsx"
+            # Make sure directory exists
+            os.makedirs(os.path.dirname(download_path), exist_ok=True)
+            # Save to Excel
+            df.to_excel(download_path, index=False)
+            # print(f"File saved to: {download_path}")
+            return redirect('/ss')
+
+
 
     return render(request,'DBS&S.html')
 
