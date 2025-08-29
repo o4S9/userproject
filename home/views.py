@@ -615,18 +615,49 @@ def differencSS(request):
         elif status == 'short':
             return render(request,'DBS&S.html',{"result":result1,})
         elif status == 'excess':
+            
             return render(request,'DBS&S.html',{"result":result2,})
         elif download == 'download':
-            data = list(result)   # result is your queryset with annotate()
-            # Load into Pandas
-            df = pd.DataFrame(data)
-            # Specify download path (example for Windows)
-            download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
-            # Make sure directory exists
-            os.makedirs(os.path.dirname(download_path), exist_ok=True)
-            # Save to Excel
-            df.to_excel(download_path, index=False)
-            # print(f"File saved to: {download_path}")
+            if status == 'all':
+                data = list(result)   # result is your queryset with annotate()
+                # Load into Pandas
+                df = pd.DataFrame(data)
+                # Specify download path (example for Windows)
+                download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
+                # Make sure directory exists
+                os.makedirs(os.path.dirname(download_path), exist_ok=True)
+                # Save to Excel
+                df.to_excel(download_path, index=False)
+                # print(f"File saved to: {download_path}")
+                return redirect('/ss')
+
+            elif status == 'short':
+                data = list(result1)   # result is your queryset with annotate()
+                # Load into Pandas
+                df = pd.DataFrame(data)
+                # Specify download path (example for Windows)
+                download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
+                # Make sure directory exists
+                os.makedirs(os.path.dirname(download_path), exist_ok=True)
+                # Save to Excel
+                df.to_excel(download_path, index=False)
+                # print(f"File saved to: {download_path}")
+                return redirect('/ss')
+
+            elif status == 'excess':
+                data = list(result2)   # result is your queryset with annotate()
+                # Load into Pandas
+                df = pd.DataFrame(data)
+                # Specify download path (example for Windows)
+                download_path = r"C:/Users/Onkar/Downloads/StockVScanningDiffData.xlsx"
+                # Make sure directory exists
+                os.makedirs(os.path.dirname(download_path), exist_ok=True)
+                # Save to Excel
+                df.to_excel(download_path, index=False)
+                # print(f"File saved to: {download_path}")
+                return redirect('/ss')
+
+
             return redirect('/ss')
         else:
             pass

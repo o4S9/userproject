@@ -153,9 +153,13 @@
     </table>
   </div>
 </div><br>
-   <div class="container mb-3">
-  <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
-</div>
+    <div class="container mb-3">
+      <form action="" method="post">
+        {% csrf_token %}
+        <input type="download" name="download" value="download" style="display: none;">
+        <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
+      </form>
+    </div>
 
   </div>
 
@@ -186,18 +190,7 @@
 
         }
         window.onload = displayStatus;
-  function downloadTable() {
-  var table = document.querySelector("table").outerHTML;
 
-  // Fix for Barcode column (force Excel to treat as text)
-  table = table.replace(/<td>(\d+)<\/td>/g, "<td style='mso-number-format:\\@'>$1</td>");
-
-  var blob = new Blob([table], {type: "application/vnd.ms-excel"});
-  var link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "table_data.xls";
-  link.click();
-}
   </script>
 
 </body>
