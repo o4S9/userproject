@@ -438,28 +438,6 @@ def main(request):
         create_bd(obj.file)
     return render(request,'upload.html')
 
-# def create_bdsc(file_path):
-#     filePath = file_path
-#     df = pd.read_excel(filePath)
-#     # print(df)
-#     list_of_csv = [list(row) for row in df.values]
-#     # today =  datetime.today().date()
-#     # list_of_csv = [list(row) for row in df.values]
-#     # print(list_of_csv)
-#     # for l in list_of_csv:
-#     #     print(l)
-#         # loctionRecords.objects.create(      
-#         #     BRANCHCODE	                             = l[0],
-        
-#         # )
-# def scan(request):
-#     if request.method == "POST":
-#         file = request.FILES['file'] 
-#         obj  = scanningFile.objects.create(file = file)
-#         # print(obj)
-#         create_bdsc(obj.file)
-#         return redirect("/scan")
-#     return render(request,'importScanningFIle.html')
 
 def createScan_bd(file_path):
     filePath = file_path
@@ -474,7 +452,24 @@ def createScan_bd(file_path):
         Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
         Selected_barcode_Master = MasterData.objects.filter(ADDL = addl).first()
         # print(Selected_barcode)
-        displayBarcode = loctionRecords.objects.all().values()
+        location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list')
+            # Step 1 → Aggregate sum of stock, explicitly as Integer
+        qs = StockData.objects.values(
+            'EANCODE', 'BARCODE', 'ITEMNAME', 'SIZE', 'BRAND','SECTION', 'MRP'
+        ).annotate(
+            stock_sum=Sum('CLOSINGSTOCK', output_field=IntegerField()),   # force numeric
+            home_loctionrecords=Subquery(location_count, output_field=IntegerField())
+        )
+        print(qs)
+        # Step 2 → Wrap with Coalesce and compute difference safely
+        result = qs.annotate(
+            home_stockdata=Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+            home_loctionrecords=Coalesce(F('home_loctionrecords'), Value(0), output_field=IntegerField()),
+            difference=ExpressionWrapper(
+                F('home_loctionrecords') - Coalesce(F('stock_sum'), Value(0), output_field=IntegerField()),
+                output_field=IntegerField()  # enforce integer output
+            )
+        )
         if addl == '':
             # print( "Please enter a barcode!")
             return redirect('/scan')
