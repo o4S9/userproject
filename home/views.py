@@ -296,10 +296,6 @@ def dataEntry(request):
     # print(dispaly)
     return render(request,'Data_Entry.html',{'display': dispaly})
 
-
-
-
-
 def view(request):
     selected_code = None
     selected_product = None
