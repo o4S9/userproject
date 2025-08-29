@@ -288,7 +288,8 @@ def dataEntry(request):
     # ).annotate(
     #     difference=F('home_loctionrecords') - F('home_stockdata')
     # )
-    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+    location_count1 = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list')
+    print(location_count1)
     result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
     home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
     dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
