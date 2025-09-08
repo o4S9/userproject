@@ -22,7 +22,6 @@ urlpatterns = [
     path('short', login_required(views.short, login_url='/login')), 
     path('excess', login_required(views.excess, login_url='/login')), 
     path('scand', login_required(views.downloadScan, login_url='/login')), 
-
-    path('scan', views.upload_scanning, name="ScanningFile"),
+    path('scan/', views.upload_scanning, name="ScanningFile"),
 
 ]

@@ -35,17 +35,19 @@ def index(request):
     #    print(master)
        return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,"Ecount":ExcessCount})
    elif itename:
-       print(itename)
+    #    print(itename)
        master = MasterData.objects.filter(ITEMNAME = itename).values()
        return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,"Ecount":ExcessCount})
 
 #    Short List Item
 
+   master = MasterData.objects.all().values()   
    return render(request, 'index.html',{
        "Count":MasterCount,
        "Scount":StockCount,
        "Sccount":ScanningCount,  
-       "Ecount":ExcessCount     
+       "Ecount":ExcessCount,
+       "masterPro":master     
        }) 
     
 
@@ -150,12 +152,20 @@ def dataEntry(request):
     addl = None 
     loc  = None 
     lc   = None
+    cb   = None
+    ub   = None
+
     if request.method == "POST":
         loc  = request.POST.get("location")
         addl = request.POST.get("addl")
         lc   = request.POST.get("lc")
-        cb   = request.POST.get('cb')
-        ub   = request.POST.get('ub')
+        cb   = request.POST.get('addl')
+        ub   = request.POST.get('updateAddl')
+        checkBox = request.POST.get('selected_items')
+        # print(checkBox)
+        # cl = list[checkBox]
+        # for i in cl:
+        #     print(i)
         # print('Update:',cb,ub)
         # print("Loc & Addl: ",loc,addl)
         Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
@@ -164,103 +174,141 @@ def dataEntry(request):
         displayBarcode = loctionRecords.objects.all().values()
         locationno = loctionRecords.objects.filter(loc_rec = loc).first()
 
-        try:
-            if addl == '':
-                messages.success(request, "Please enter a barcode!")
-            elif Selected_barcode:
-                # barcode = StockData(scanningdata_id = addl)
-                barData = loctionRecords(loc_rec = loc,add_item_list = addl)
-                location_count = loctionRecords.objects.exclude(loc_rec = loc).count()
-                dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
-                # barcode.save()
-                barData.save()
-                
-                # print(displayBarcode)
-                if Selected_barcode:
-                    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
-                    result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
-                    home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
-                    # return render(request,'DBS&S.html',{"result":result})
-                elif displayBarcode:
-                    # print(displayBarcode) 
-                    pass               
-                return redirect('/dataEnter')
-
-            elif Selected_barcode_Master:
-                ser = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
-                dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
-                ser.save()
-                if Selected_barcode_Master:
-                    location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
-                    result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
-                    home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
-                    # return render(request,'DBS&S.html',{"result":result})
-                return redirect('/dataEnter')
-            elif lc:
-                location_count = loctionRecords.objects.filter(loc_rec=lc).count() 
-                dispaly = loctionRecords.objects.filter(loc_rec = lc).values()
-                # print(dispaly)
-                return render(request ,'Data_Entry.html',{"lCount":location_count,'display': dispaly})
-            elif ub != "" and cb != "":
-                # print(cb,ub)
-                # record = loctionRecords.objects.get( add_item_list=cb)
-                # record.add_item_list = ub
-                # record.save()
-                # print(loc)
-                # dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
-                # msg = "✅ Barcode updated successfully!"
-                # messages.success(request, msg) 
-                return render(request ,'Data_Entry.html') 
-                # try:
-                #     record = loctionRecords.objects.get( add_item_list=cb)
-                #     record.add_item_list = ub
-                #     record.save()
-                #     # print(loc)
-                #     # dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
-                #     msg = "✅ Barcode updated successfully!"
-                #     messages.success(request, msg) 
-                #     return render(request ,'Data_Entry.html')            
-
-                # except StockData.DoesNotExist:
-                #     msg1 = "❌ Record not found!"
-                #     messages.success(request, msg1)  
-            elif locationno:
-                msg = "✅ Location Allreday Enterd! Please try someone"
-                messages.success(request, msg)
-
-            else:
-                # print("Barecode Not Match!")
-                EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
-                EBSc.save()             
-                messages.success(request, "This is a Invalid Barcode")            
-                # mr = MasterData.objects.filter(ITEMCODE = dlr).values()
-                # print("Scanning REc :",mr)
+        if addl == '':
+            messages.error(request, "Please enter a barcode!")
+        elif Selected_barcode:
+            # barcode = StockData(scanningdata_id = addl)
+            barData = loctionRecords(loc_rec = loc,add_item_list = addl)
+            location_count = loctionRecords.objects.exclude(loc_rec = loc).count()
+            dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+            # barcode.save()
+            barData.save()
             
+            # print(displayBarcode)
+            if Selected_barcode:
+                # Match loctionRecords.add_item_list with MasterData.ADDL
+                master_qs = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
+                result = loctionRecords.objects.annotate(
+                            ITEMCODE=Subquery(master_qs.values('ITEMCODE')[:1]),
+                            ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
+                            SIZE=Subquery(master_qs.values('SIZE')[:1]),
+                            MRP=Subquery(master_qs.values('MRP')[:1]),
+                            BRANDNAME=Subquery(master_qs.values('BRANDNAME')[:1]),
+                            SECTION=Subquery(master_qs.values('SECTION')[:1]),
+                            BASICRATE=Subquery(master_qs.values('BASICRATE')[:1]),
+                            SEASON=Subquery(master_qs.values('SEASON')[:1]),
+                            COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
+                        ).values(
+                            'add_item_list', 'ITEMCODE', 'ITEMNAME', 'SIZE',
+                            'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
+                        )
+                # print(result)
+                return render(request,'Data_Entry.html',{"result":result})
+            elif displayBarcode:
+                # print(displayBarcode) 
+                pass               
+            return redirect('/dataEnter')
+
+        elif Selected_barcode_Master:
+            ser = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
+            dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+            ser.save()
+            if Selected_barcode_Master:
                 location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
                 result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
                 home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
-                
-                return redirect('/dataEnter')
-        except StockData.DoesNotExist:
-                    msg1 = "❌ Record not found!"
-                    messages.success(request, msg1) 
+                # return render(request,'DBS&S.html',{"result":result})
+            return redirect('/dataEnter')
+        elif lc:
+            location_count = loctionRecords.objects.filter(loc_rec=lc).count() 
+            # Match loctionRecords.add_item_list with MasterData.ADDL
+            master_qs = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
+            result = loctionRecords.objects.annotate(
+                        ITEMCODE=Subquery(master_qs.values('ITEMCODE')[:1]),
+                        ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
+                        SIZE=Subquery(master_qs.values('SIZE')[:1]),
+                        MRP=Subquery(master_qs.values('MRP')[:1]),
+                        BRANDNAME=Subquery(master_qs.values('BRANDNAME')[:1]),
+                        SECTION=Subquery(master_qs.values('SECTION')[:1]),
+                        BASICRATE=Subquery(master_qs.values('BASICRATE')[:1]),
+                        SEASON=Subquery(master_qs.values('SEASON')[:1]),
+                        COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
+                    ).values(
+                        'add_item_list','loc_rec','ITEMCODE', 'ITEMNAME', 'SIZE',
+                        'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
+                    )
+            # print(result)
+            return render(request,'Data_Entry.html',{"result":result,"lCount":location_count})
+        # elif ub != "" and cb != "":
+        #     pass
+            # print('Update:',cb,ub)
+            # record = loctionRecords.objects.get( add_item_list=cb)
+            # record.add_item_list = ub
+            # record.save()
+            # print(loc)
+            # dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+            # msg = "✅ Barcode updated successfully!"
+            # messages.success(request, msg) 
+            # return render(request ,'Data_Entry.html') 
+        #     try:
+        #         record = loctionRecords.objects.get( add_item_list=cb)
+        #         record.add_item_list = ub
+        #         record.save()
+        #         # print(loc)
+        #         dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+        #         msg = "✅ Barcode updated successfully!"
+        #         messages.success(request, msg) 
+        #         return render(request ,'Data_Entry.html',{'display': dispaly})            
+
+        #     except loctionRecords.DoesNotExist:
+        #         msg1 = "❌ Record not found!"
+        #         messages.error(request, msg1)  
+        # # elif locationno:
+        #     msg = "✅ Location Allreday Enterd! Please try someone"
+        #     messages.error(request, msg)
+        #     return redirect('/dataEnter')
+        elif checkBox:
+            print('ChecBox :',checkBox)
+            # product = loctionRecords.objects.get(add_item_list=checkBox)  # find row with id=1
+            # product.delete()                                              # deletes this row
+
+        else:
+            # print("Loc & Addl: ",loc,addl)
+            # print("Barecode Not Match!")
+            EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
+            EBSc.save()             
+            messages.error(request, "❌ This is an Invalid Barcode")            # mr = MasterData.objects.filter(ITEMCODE = dlr).values()
+            # print("Scanning REc :",mr)
+        
+            location_count = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list').annotate( c=Count('id') ).values('c') 
+            result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP')
+            # print(result) 
+            
+            return redirect('/dataEnter')
+        # except StockData.DoesNotExist:
+        #             msg1 = "❌ Record not found!"
+        #             messages.success(request, msg1) 
 
     
-    # location_count = loctionRecords.objects.filter(
-    # add_item_list=OuterRef('BARCODE')
-    # ).values('add_item_list').annotate(
-    #     c=Count('id')
-    # ).values('c')
-    # result = StockData.objects.values('BARCODE').annotate(
-    #     home_stockdata=Count('BARCODE'),
-    #     home_loctionrecords=Subquery(location_count, output_field=models.IntegerField())
-    # ).annotate(
-    #     difference=F('home_loctionrecords') - F('home_stockdata')
-    # )
-    # location_count1 = loctionRecords.objects.filter( add_item_list=OuterRef('EANCODE') ).values('add_item_list')
-    # print(location_count1)
-    # result = StockData.objects.values('EANCODE','BARCODE','ITEMNAME','SIZE','SECTION','MRP').annotate( home_stockdata=Count('EANCODE'), 
-    # home_loctionrecords=Subquery(location_count, output_field=models.IntegerField()) ).annotate( difference=F('home_loctionrecords') - F('home_stockdata') ) 
+    
+    
+    try:  
+        if ub != "" and cb != "":
+            
+            # print('Update:',cb,ub)
+            record = loctionRecords.objects.get( add_item_list=cb)
+            record.add_item_list = ub
+            record.save()
+            # print(loc)
+            dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
+            msg = "✅ Barcode updated successfully!"
+            messages.success(request, msg) 
+            return redirect('/dataEnter')            
+
+    except loctionRecords.DoesNotExist:
+        msg1 = "❌ Record not found!"
+        messages.error(request, msg1)
+    
     dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
     # print(dispaly)
     return render(request,'Data_Entry.html',{'display': dispaly})
@@ -435,18 +483,18 @@ def createScan_bd(file_path):
         if addl == '':
             # print( "Please enter a barcode!")
             return redirect('/scan')
-        elif Selected_barcode:
-            # print(l)
-            # barcode = StockData(scanningdata_id = addl)
-            barData = loctionRecords(loc_rec = loc,add_item_list = addl)
-            barData.save()
+        # elif Selected_barcode:
+        #     # print(l)
+        #     # barcode = StockData(scanningdata_id = addl)
+        #     barData = loctionRecords(loc_rec = loc,add_item_list = addl)
+        #     barData.save()
         elif Selected_barcode_Master:
             # print("Excess !")
-            ser = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
+            ser = loctionRecords(loc_rec = loc,add_item_list = addl)
             ser.save()
         else:
             # print("Not in Your Stock")
-            EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
+            EBSc = ExcessRecordScanning(loc_rec = loc,add_item_list = addl)
             EBSc.save() 
        
         # loctionRecords.objects.create(

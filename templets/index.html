@@ -184,7 +184,12 @@
                 </td>
                 <td>
                   <label for="itename" class="form-label">Item Name:</label>
-                  <input type="text" name="itename" id="itename" class="form-control">
+                  <input list="item_name" name="itename" id="itename" class="form-control">
+                  <datalist id="item_name">
+                    {% for item in masterPro %}
+                    <option value="{{item.ITEMNAME}}">
+                      {% endfor %}
+                  </datalist>
                 </td>
                 <td>
                   <button type="submit" class="btn btn-primary w-100">Show</button>
@@ -195,6 +200,12 @@
         </form>
       </div>
     </div>
+    <!-- <select id="itename" name="item_name">
+      {% for item in masterProducts %}
+      <option value=" {{ item.ITEMNAME }}"></option>
+
+      {% endfor %}
+    </select> -->
 
     {% comment %} 🔹 Card Layout for Items {% endcomment %}
     <div class="container mt-4">
