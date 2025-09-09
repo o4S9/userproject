@@ -161,6 +161,19 @@
           </div>
         </div>
       </div>
+       <!-- Nill File Data Count -->
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title text-danger">Nill-Record Count</h5>
+            {% if nill %}
+            <p class="display-6 fw-bold">{{nill}}</p>
+            {% endif %}
+            <span class="text-muted">Items in Nill File</span>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     {% comment %} 🔹 Search / Filter Form {% endcomment %}
@@ -229,7 +242,6 @@
               <p><strong>MRP:</strong> ₹{{ item.MRP }}</p>
               <p><strong>Brand:</strong> {{ item.BRANDNAME }}</p>
               <p><strong>Section:</strong> {{ item.SECTION }}</p>
-              <p><strong>Basic Rate:</strong> ₹{{ item.BASICRATE }}</p>
               <p><strong>Season:</strong> {{ item.SEASON }}</p>
               <p><strong>Colours:</strong> {{ item.COLOURS }}</p>
             </div>

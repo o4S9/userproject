@@ -125,7 +125,6 @@
 
     <!-- Main content -->
     <div class="main-content p-4">
-        <div class="container"></div>
 
 
 
@@ -257,18 +256,24 @@
                                                 <input type="text" name="location" id="myInput" class="form-control"
                                                     readonly>
                                             </div>
+                                            <div class="mb-2">
+                                                <label for="addl" class="form-label">Addl :</label>
+                                                <input type="text" name="addl" id="myInput1" class="form-control"
+                                                    readonly>
+                                            </div>
                                         </td>
 
                                         <!-- Item Input -->
                                         <td>
                                             <div class="mb-2">
                                                 <label for="addl" class="form-label">Add Item</label>
-                                                <input type="text" name="addl" id="addl" class="form-control"
-                                                    placeholder="Enter Item Code" autofocus>
+                                                <input type="text" name="" id="addl" class="form-control"
+                                                    placeholder="Enter Item Code" >
                                             </div>
-                                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                            <button type="submit" class="btn btn-primary btn-sm w-100" onclick="ac()">
                                                 Submit
-                                            </button>
+                                            </button><br>
+                                            
                                         </td>
                                     </tr>
                                 </tbody>
@@ -301,60 +306,60 @@
                     {% endif %}
 
                     <!-- Action Toggle Tabs -->
-<ul class="nav nav-tabs mb-3" id="barcodeTab" role="tablist">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="update-tab" data-bs-toggle="tab" data-bs-target="#update-form" type="button" role="tab">Update</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="delete-tab" data-bs-toggle="tab" data-bs-target="#delete-form" type="button" role="tab">Delete</button>
-  </li>
-</ul>
+<!--<ul class="nav nav-tabs mb-3" id="barcodeTab" role="tablist">-->
+<!--  <li class="nav-item" role="presentation">-->
+<!--    <button class="nav-link active" id="update-tab" data-bs-toggle="tab" data-bs-target="#update-form" type="button" role="tab">Update</button>-->
+<!--  </li>-->
+<!--  <li class="nav-item" role="presentation">-->
+<!--    <button class="nav-link" id="delete-tab" data-bs-toggle="tab" data-bs-target="#delete-form" type="button" role="tab">Delete</button>-->
+<!--  </li>-->
+<!--</ul>-->
 
 <!-- Tab Content -->
-<div class="tab-content" id="barcodeTabContent">
+<!--<div class="tab-content" id="barcodeTabContent">-->
   <!-- Update Form -->
-  <div class="tab-pane fade show active" id="update-form" role="tabpanel">
-    <div class="card shadow p-3">
-      <h5 class="card-title">Update Barcode</h5>
-      <form action="/dataEnter" method="post">
-        {% csrf_token %}
-        <!-- <div class="mb-3">
-          <label for="locationNoUpdate" class="form-label">Enter a Location No:</label>
-          <input type="text" name="locationNo" id="locationNoUpdate" class="form-control" required>
-        </div> -->
-        <div class="mb-3">
-          <label for="addlUpdate" class="form-label">Enter Addl:</label>
-          <input type="text" name="addl" id="addlUpdate" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="updateAddl" class="form-label">Enter Update Addl:</label>
-          <input type="text" name="updateAddl" id="updateAddl" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-success w-100">Update</button>
-      </form>
-    </div>
-  </div>
+<!--  <div class="tab-pane fade show active" id="update-form" role="tabpanel">-->
+<!--    <div class="card shadow p-3">-->
+<!--      <h5 class="card-title">Update Barcode</h5>-->
+<!--      <form action="/dataEnter" method="post">-->
+<!--        {% csrf_token %}-->
+<!--        <div class="mb-3">-->
+<!--          <label for="locationNoUpdate" class="form-label">Enter a Location No:</label>-->
+<!--          <input type="text" name="locationNo" id="locationNoUpdate" class="form-control" required>-->
+<!--        </div>-->
+<!--        <div class="mb-3">-->
+<!--          <label for="addlUpdate" class="form-label">Enter Addl:</label>-->
+<!--          <input type="text" name="addl" id="addlUpdate" class="form-control" required>-->
+<!--        </div>-->
+<!--        <div class="mb-3">-->
+<!--          <label for="updateAddl" class="form-label">Enter Update Addl:</label>-->
+<!--          <input type="text" name="updateAddl" id="updateAddl" class="form-control">-->
+<!--        </div>-->
+<!--        <button type="submit" class="btn btn-success w-100">Update</button>-->
+<!--      </form>-->
+<!--    </div>-->
+<!--  </div>-->
 
   <!-- Delete Form -->
-  <div class="tab-pane fade" id="delete-form" role="tabpanel">
-    <div class="card shadow p-3">
-      <h5 class="card-title">Delete Barcode</h5>
-      <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label for="locationNoDelete" class="form-label">Enter a Location No:</label>
-          <input type="text" name="locationNo" id="locationNoDelete" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="addlDelete" class="form-label">Enter Addl:</label>
-          <input type="text" name="addl" id="addlDelete" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-danger w-100">Delete</button>
-      </form>
-    </div>
-  </div>
-</div>
-<br>
+<!--  <div class="tab-pane fade" id="delete-form" role="tabpanel">-->
+<!--    <div class="card shadow p-3">-->
+<!--      <h5 class="card-title">Delete Barcode</h5>-->
+<!--      <form action="/deleteBarcode" method="post">-->
+<!--        {% csrf_token %}-->
+<!--        <div class="mb-3">-->
+<!--          <label for="locationNoDelete" class="form-label">Enter a Location No:</label>-->
+<!--          <input type="text" name="locationNo" id="locationNoDelete" class="form-control" required>-->
+<!--        </div>-->
+<!--        <div class="mb-3">-->
+<!--          <label for="addlDelete" class="form-label">Enter Addl:</label>-->
+<!--          <input type="text" name="addl" id="addlDelete" class="form-control" required>-->
+<!--        </div>-->
+<!--        <button type="submit" class="btn btn-danger w-100">Delete</button>-->
+<!--      </form>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<br>-->
 
                 </div>
                 <!-- Filter + Update Barcode in Same Row with Flex -->
@@ -383,89 +388,85 @@
 
                      <br>
 
-                <div class="container-fluid mt-4">
+    <div class="container-fluid mt-4">
 
-                    <!-- Page Title -->
-                    <h2 class="mb-4 text-center">📊 Scanning Records</h2>
+  <!-- Page Title -->
+  <h2 class="mb-4 text-center text-primary fw-bold">
+    📊 Scanning Records
+  </h2>
 
-                    <!-- Table Section -->
-                   <div class="card shadow-lg border-0">
+  <!-- Card Wrapper -->
+  <div class="card shadow-lg border-0 rounded-3">
     <div class="card-body">
 
-        <!-- Table Wrapper (scrollable) -->
-        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-            <form method="post" action="/dataEnter">
-                {% csrf_token %}
-                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
-                    <thead class="table-dark sticky-top">
-                        <tr>
-                            <th scope="col">
-                                <input type="checkbox" id="selectAll"> <!-- Master Checkbox -->
-                            </th>
-                            <th scope="col">Location</th>
-                            <th scope="col">ADDL</th>
-                            <th scope="col">ITEMCODE</th>
-                            <th scope="col">ITEMNAME</th>
-                            <th scope="col">SIZE</th>
-                            <th scope="col">MRP</th>
-                            <th scope="col">BRAND</th>
-                            <th scope="col">SECTION</th>
-                            <th scope="col">SEASON</th>
-                            <th scope="col">COLOURS</th>
-                            <th scope="col">Delete-Record</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in result %}
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="selected_items" value="{{ row.add_item_list }}">
-                            </td>
-                            <td>{{ row.loc_rec }}</td>
-                            <td>{{ row.add_item_list }}</td>
-                            <td>{{ row.ITEMCODE }}</td>
-                            <td>{{ row.ITEMNAME }}</td>
-                            <td>{{ row.SIZE }}</td>
-                            <td>{{ row.MRP }}</td>
-                            <td>{{ row.BRANDNAME }}</td>
-                            <td>{{ row.SECTION }}</td>
-                            <td>{{ row.SEASON }}</td>
-                            <td>{{ row.COLOURS }}</td>
-                            <td><button type="submit" class="btn btn-primary btn-danger mt-3">Delete</button></td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="11" class="text-center text-muted">No records found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+      <!-- Scrollable Table -->
+      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <form method="post" action="/dataEnter">
+          {% csrf_token %}
+          <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+            <thead class="table-dark sticky-top">
+              <tr>
+                <th scope="col">
+                  <input type="checkbox" id="selectAll" class="form-check-input">
+                </th>
+                <th scope="col">#</th>
+                <th scope="col">Location</th>
+                <th scope="col">ADDL</th>
+                <th scope="col">Item Code</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Size</th>
+                <th scope="col">MRP</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Section</th>
+                <th scope="col">Season</th>
+                <th scope="col">Colours</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in result %}
+              <tr>
+                <td>
+                  <input type="checkbox" name="selected_items" value="{{ row.id }}" class="form-check-input">
+                </td>
+                <td>{{ row.id }}</td>
+                <td>{{ row.loc_rec }}</td>
+                <td>{{ row.add_item_list }}</td>
+                <td>{{ row.ITEMCODE }}</td>
+                <td>{{ row.ITEMNAME }}</td>
+                <td>{{ row.SIZE }}</td>
+                <td>{{ row.MRP }}</td>
+                <td>{{ row.BRANDNAME }}</td>
+                <td>{{ row.SECTION }}</td>
+                <td>{{ row.SEASON }}</td>
+                <td>{{ row.COLOURS }}</td>
+                <td>
+                  <button type="submit" name="delete_id" value="{{ row.id }}"
+                          class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="13" class="text-center text-muted">No records found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
 
-                <!-- Action Button -->
-                <!-- <button type="submit" class="btn btn-primary mt-3">Submit Selected</button> -->
-            </form>
-        </div>
+          <!-- Bulk Action -->
+          <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
+          <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
+          <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
+          <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
+          <!--  </button>-->
+          <!--</div>-->
+        </form>
+      </div>
     </div>
+  </div>
 </div>
-
-<!-- ✅ Script for Select All -->
-<script>
-    document.getElementById("selectAll").addEventListener("click", function () {
-        let checkboxes = document.querySelectorAll('input[name="selected_items"]');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-</script>
-
-
-
-
-                    </div>
-                </div>
-
-                <br>
-
-            </div>
-        </div>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -485,13 +486,33 @@
             localStorage.setItem("Location", lno);
             displayLoction();
         }
+        function ac(){
+            let an = document.getElementById("addl").value;
+            localStorage.setItem("ADDL", an);
+            displayAddl();
+
+        }
         function displayLoction() {
             let storedName = localStorage.getItem("Location");
             document.getElementById("myInput").value = localStorage.getItem("Location");
-            document.getElementById("output").innerText = storedName;
+            document.getElementById("myInput1").value = localStorage.getItem("ADDL");
+
+            // document.getElementById("output").innerText = storedName;
+
 
         }
+        
+        function displayAddl() {  
+            let storedName = localStorage.getItem("ADDL");
+            document.getElementById("myInput1").value = localStorage.getItem("ADDL");
+            document.getElementById("output1").innerText = storedName;
+
+
+        }
+
+
         window.onload = displayLoction;
+        // window.onload = displayAddl;
 
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("overlay");
@@ -506,32 +527,28 @@
             sidebar.classList.remove("active");
             overlay.classList.remove("active");
         });
-        // download table
-        function downloadTable() {
-            var table = document.getElementById("table1").outerHTML;
 
-            // Fix for Barcode column (force Excel to treat as text)
-            table = table.replace(/<td>(\d+)<\/td>/g, "<td style='mso-number-format:\\@'>$1</td>");
-
-            var blob = new Blob([table], { type: "application/vnd.ms-excel" });
-            var link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "table_scanning_data.xls";
-            link.click();
-        }
 
   // Auto-submit when scanner sends "Enter"
-            inputField.addEventListener("keypress", function (event) {
-                if (event.key === "Enter") {
-                    event.preventDefault(); // stop default form behavior
-                    form.submit();          // auto-submit
-                }
-            });
+            // inputField.addEventListener("keypress", function (event) {
+            //     if (event.key === "Enter") {
+            //         event.preventDefault(); // stop default form behavior
+            //         form.submit();          // auto-submit
+            //     }
+            // });
 
             // (Optional) Auto-submit after input is filled (scanner types fast)
-            inputField.addEventListener("change", function () {
-              form.submit();
-            });
+            // inputField.addEventListener("change", function () {
+            //   form.submit();
+            // });
+
+            <!-- ✅ Script for Select All -->
+
+    document.getElementById("selectAll").addEventListener("click", function () {
+        let checkboxes = document.querySelectorAll('input[name="selected_items"]');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+
 
     </script>
 
