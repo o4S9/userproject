@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Audit-Manager Dashboard</title>
@@ -59,7 +60,7 @@
         position: fixed;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         top: 0;
         left: 0;
         z-index: 1040;
@@ -71,6 +72,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Toggle Button (hamburger) -->
@@ -81,61 +83,77 @@
     </div>
   </nav>
 
-     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <h4 class="text-start">Audit-Manager</h4>
-        <h5>Welcome {{request.user}}</h5>
-        <hr style="border-color: rgba(255, 255, 255, 0.2)">
-        <a href="/">🏠 Home</a>
-        <a href="/scanner">📷 Scanning-File</a>
-        <a href="/scan">📷 Scanning-Record</a>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h4 class="text-start">Audit-Manager</h4>
+    <h5>Welcome {{request.user}}</h5>
+    <hr style="border-color: rgba(255, 255, 255, 0.2)">
+    <a href="/">🏠 Home</a>
+    <a href="/scanner">📷 Scanning-File</a>
+    <a href="/scan">📷 Scanning-Record</a>
 
 
-    </div>
+  </div>
 
- <!-- Main Content -->
+  <!-- Main Content -->
   <div class="main-content">
-  <div class="container">
-    <h2 class="mb-4">Upload-Scanning Excel File</h2>
-    <form method="post" enctype="multipart/form-data">
+    <div class="container">
+      <h2 class="mb-4">Upload-Scanning Excel File</h2>
+      <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
-            <label for="excel_file" class="form-label">Select-Scanning Excel File</label>
-            <input class="form-control" type="file" id="excel_file" name="file" accept=".xls,.xlsx,.csv" required>
+          <label for="excel_file" class="form-label">Select-Scanning Excel File</label>
+          <input class="form-control" type="file" id="excel_file" name="file" accept=".xls,.xlsx,.csv" required>
         </div>
         <button class="btn btn-primary" type="submit">Import</button>
-    </form>
-</div><br>
-   <!-- Update Barcode Form -->
-                        <!--<div class="flex-fill" style="min-width: 300px; max-width: 100%;">-->
-                        <!--    <h5 class="card-title">Update Barcode</h5>-->
-                        <!--    <div class="card shadow p-3 h-100">-->
-                        <!--        <form action="/dataEnter" method="post">-->
-                        <!--            {% csrf_token %}-->
-                        <!--            <div class="d-flex flex-wrap gap-3" style="display: flex; flex-direction: row;">-->
-                        <!--                <div class="mb-3">-->
-                        <!--                <label for="cb" class="form-label">Enter a locationNo:</label>-->
-                        <!--                <input type="text" name="cb" id="bc" class="form-control"-->
-                        <!--                    placeholder="Location number ...">-->
-                        <!--            </div>-->
-                        <!--            <div class="mb-3">-->
-                        <!--                <label for="cb" class="form-label">Enter a Addl:</label>-->
-                        <!--                <input type="text" name="cb" id="bc" class="form-control"-->
-                        <!--                    placeholder="Addl ...">-->
-                        <!--            </div>-->
-                        <!--            <div class="mb-3">-->
-                        <!--                <label for="ub" class="form-label">Enter Update Addl:</label>-->
-                        <!--                <input type="text" name="ub" id="ub" class="form-control"-->
-                        <!--                    placeholder="Update Addl ...">-->
-                        <!--            </div>-->
-                        <!--            <div class="mb-3">-->
-                        <!--            <button type="submit" class="btn btn-success w-100">Update</button>-->
-                        <!--            </div>-->
-                        <!--            </div>-->
-                        <!--        </form>-->
-                        <!--    </div>-->
-                        <!--</div><br>-->
-                         <!-- Django Messages -->
+      </form>
+    </div><br>
+    
+    {% if messages %}
+    <div class="container mt-2">
+      {% for message in messages %}
+      <div class="alert
+               {% if message.tags == 'success' %} alert-success
+               {% elif message.tags == 'error' %} alert-danger
+               {% else %} alert-info {% endif %}
+               alert-dismissible fade show" role="alert">
+
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <!-- Update Barcode Form -->
+    <!--<div class="flex-fill" style="min-width: 300px; max-width: 100%;">-->
+    <!--    <h5 class="card-title">Update Barcode</h5>-->
+    <!--    <div class="card shadow p-3 h-100">-->
+    <!--        <form action="/dataEnter" method="post">-->
+    <!--            {% csrf_token %}-->
+    <!--            <div class="d-flex flex-wrap gap-3" style="display: flex; flex-direction: row;">-->
+    <!--                <div class="mb-3">-->
+    <!--                <label for="cb" class="form-label">Enter a locationNo:</label>-->
+    <!--                <input type="text" name="cb" id="bc" class="form-control"-->
+    <!--                    placeholder="Location number ...">-->
+    <!--            </div>-->
+    <!--            <div class="mb-3">-->
+    <!--                <label for="cb" class="form-label">Enter a Addl:</label>-->
+    <!--                <input type="text" name="cb" id="bc" class="form-control"-->
+    <!--                    placeholder="Addl ...">-->
+    <!--            </div>-->
+    <!--            <div class="mb-3">-->
+    <!--                <label for="ub" class="form-label">Enter Update Addl:</label>-->
+    <!--                <input type="text" name="ub" id="ub" class="form-control"-->
+    <!--                    placeholder="Update Addl ...">-->
+    <!--            </div>-->
+    <!--            <div class="mb-3">-->
+    <!--            <button type="submit" class="btn btn-success w-100">Update</button>-->
+    <!--            </div>-->
+    <!--            </div>-->
+    <!--        </form>-->
+    <!--    </div>-->
+    <!--</div><br>-->
+    <!-- Django Messages -->
 
 
 
@@ -143,258 +161,257 @@
 
     <!-- Table Section -->
     <div class="card shadow-lg border-0">
-        <div class="card-body">
+      <div class="card-body">
 
-            <!-- Table Wrapper (scrollable) -->
-            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                <h2 class="mb-4 text-center text-primary fw-bold">
-    📊 Scanning Records
-  </h2>
-                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
-                    <thead class="table-dark sticky-top">
-                        <tr>
-                            <th scope="col">Location</th>
-                            <th scope="col">ADDL</th>
-                            <th scope="col">ITEMCODE</th>
-                            <th scope="col">ITEMNAME</th>
-                            <th scope="col">SIZE</th>
-                            <th scope="col">MRP</th>
-                            <th scope="col">BRAND</th>
-                            <th scope="col">SECTION</th>
-                            <th scope="col">SEASON</th>
-                            <th scope="col">COLOURS</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in display %}
-                        <tr>
-                            <td>{{ row.loc_rec }}</td>
-                            <td>{{ row.add_item_list }}</td>
-                            <td>{{ row.ITEMCODE }}</td>
-                            <td>{{ row.ITEMNAME }}</td>
-                            <td>{{ row.SIZE }}</td>
-                            <td>{{ row.MRP }}</td>
-                            <td>{{ row.BRANDNAME }}</td>
-                            <td>{{ row.SECTION }}</td>
-                            <td>{{ row.SEASON }}</td>
-                            <td>{{ row.COLOURS }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">No records found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
+        <!-- Table Wrapper (scrollable) -->
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <h2 class="mb-4 text-center text-primary fw-bold">
+            📊 Scanning Records
+          </h2>
+          <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+            <thead class="table-dark sticky-top">
+              <tr>
+                <th scope="col">Location</th>
+                <th scope="col">ADDL</th>
+                <th scope="col">ITEMCODE</th>
+                <th scope="col">ITEMNAME</th>
+                <th scope="col">SIZE</th>
+                <th scope="col">MRP</th>
+                <th scope="col">BRAND</th>
+                <th scope="col">SECTION</th>
+                <th scope="col">SEASON</th>
+                <th scope="col">COLOURS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in display %}
+              <tr>
+                <td>{{ row.loc_rec }}</td>
+                <td>{{ row.add_item_list }}</td>
+                <td>{{ row.ITEMCODE }}</td>
+                <td>{{ row.ITEMNAME }}</td>
+                <td>{{ row.SIZE }}</td>
+                <td>{{ row.MRP }}</td>
+                <td>{{ row.BRANDNAME }}</td>
+                <td>{{ row.SECTION }}</td>
+                <td>{{ row.SEASON }}</td>
+                <td>{{ row.COLOURS }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-muted">No records found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        <br>
 
- <!-- Table Excess Section -->
- <div class="container-fluid mt-4">
-
-  <!-- Page Title -->
-  <h2 class="mb-4 text-center text-primary fw-bold">
-    📊 Excess Records
-  </h2>
-
-  <!-- Card Wrapper -->
-  <div class="card shadow-lg border-0 rounded-3">
-    <div class="card-body">
-
-      <!-- Scrollable Table -->
-      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-        <form method="post" action="/dataEnter">
-          {% csrf_token %}
-          <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
-            <thead class="table-dark sticky-top">
-              <tr>
-                <th scope="col">
-                  <input type="checkbox" id="selectAll" class="form-check-input">
-                </th>
-                <th scope="col">#</th>
-                <th scope="col">Location</th>
-                <th scope="col">ADDL</th>
-                <th scope="col">Item Code</th>
-                <th scope="col">Item Name</th>
-                <th scope="col">Size</th>
-                <th scope="col">MRP</th>
-                <th scope="col">Brand</th>
-                <th scope="col">Section</th>
-                <th scope="col">Season</th>
-                <th scope="col">Colours</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in display1 %}
-              <tr>
-                <td>
-                  <input type="checkbox" name="selected_itemsE" value="{{ row.id }}" class="form-check-input">
-                </td>
-                <td>{{ row.id }}</td>
-                <td>{{ row.loc_rec }}</td>
-                <td>{{ row.add_item_list }}</td>
-                <td>{{ row.ITEMCODE }}</td>
-                <td>{{ row.ITEMNAME }}</td>
-                <td>{{ row.SIZE }}</td>
-                <td>{{ row.MRP }}</td>
-                <td>{{ row.BRANDNAME }}</td>
-                <td>{{ row.SECTION }}</td>
-                <td>{{ row.SEASON }}</td>
-                <td>{{ row.COLOURS }}</td>
-                <td>
-                  <button type="submit" name="delete_id" value="{{ row.id }}"
-                          class="btn btn-sm btn-danger">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="13" class="text-center text-muted">No records found</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-          <!-- Bulk Action -->
-          <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
-          <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
-          <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
-          <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
-          <!--  </button>-->
-          <!--</div>-->
-        </form>
       </div>
-    </div>
-  </div>
-</div>
-<br>
-<!-- Table Nill Section -->
-    <div class="container-fluid mt-4">
+      <br>
 
-  <!-- Page Title -->
-  <h2 class="mb-4 text-center text-primary fw-bold">
-    📊 Nill Records
-  </h2>
+      <!-- Table Excess Section -->
+      <div class="container-fluid mt-4">
 
-  <!-- Card Wrapper -->
-  <div class="card shadow-lg border-0 rounded-3">
-    <div class="card-body">
+        <!-- Page Title -->
+        <h2 class="mb-4 text-center text-primary fw-bold">
+          📊 Excess Records
+        </h2>
 
-      <!-- Scrollable Table -->
-      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-        <form method="post" action="">
-          {% csrf_token %}
-          <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
-            <thead class="table-dark sticky-top">
-              <tr>
-                <th scope="col">
-                  <input type="checkbox" id="selectAll" class="form-check-input">
-                </th>
-                <th scope="col">#</th>
-                <th scope="col">Location</th>
-                <th scope="col">ADDL</th>
-                <th scope="col">Item Code</th>
-                <th scope="col">Item Name</th>
-                <th scope="col">Size</th>
-                <th scope="col">MRP</th>
-                <th scope="col">Brand</th>
-                <th scope="col">Section</th>
-                <th scope="col">Season</th>
-                <th scope="col">Colours</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in display2 %}
-              <tr>
+        <!-- Card Wrapper -->
+        <div class="card shadow-lg border-0 rounded-3">
+          <div class="card-body">
 
-                <td>
-                  <input type="checkbox" name="selected_itemsN" value="{{ row.id }}" class="form-check-input">
-                </td>
-                <td>{{ row.id }}</td>
-                <td>{{ row.loc_rec }}</td>
-                <td>{{ row.add_item_list }}</td>
-                <td>{{ row.ITEMCODE }}</td>
-                <td>{{ row.ITEMNAME }}</td>
-                <td>{{ row.SIZE }}</td>
-                <td>{{ row.MRP }}</td>
-                <td>{{ row.BRANDNAME }}</td>
-                <td>{{ row.SECTION }}</td>
-                <td>{{ row.SEASON }}</td>
-                <td>{{ row.COLOURS }}</td>
-                <td>
-                  <button type="submit" name="delete_id" value="{{ row.id }}"
-                          class="btn btn-sm btn-danger">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="13" class="text-center text-muted">No records found</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+            <!-- Scrollable Table -->
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+              <form method="get" action="/scan/">
+                {% csrf_token %}
+                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+                  <thead class="table-dark sticky-top">
+                    <tr>
+                      <th scope="col">
+                        <input type="checkbox" id="selectAll" class="form-check-input">
+                      </th>
+                      <th scope="col">#</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">ADDL</th>
+                      <th scope="col">Item Code</th>
+                      <th scope="col">Item Name</th>
+                      <th scope="col">Size</th>
+                      <th scope="col">MRP</th>
+                      <th scope="col">Brand</th>
+                      <th scope="col">Section</th>
+                      <th scope="col">Season</th>
+                      <th scope="col">Colours</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in display1 %}
+                    <tr>
+                      <td>
+                        <input type="checkbox" name="selected_itemsE" value="{{ row.id }}" class="form-check-input">
+                      </td>
+                      <td>{{ row.id }}</td>
+                      <td>{{ row.loc_rec }}</td>
+                      <td>{{ row.add_item_list }}</td>
+                      <td>{{ row.ITEMCODE }}</td>
+                      <td>{{ row.ITEMNAME }}</td>
+                      <td>{{ row.SIZE }}</td>
+                      <td>{{ row.MRP }}</td>
+                      <td>{{ row.BRANDNAME }}</td>
+                      <td>{{ row.SECTION }}</td>
+                      <td>{{ row.SEASON }}</td>
+                      <td>{{ row.COLOURS }}</td>
+                      <td>
+                        <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
+                          <i class="bi bi-trash"></i> Delete
+                        </button>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="13" class="text-center text-muted">No records found</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
 
-          <!-- Bulk Action -->
-          <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
-          <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
-          <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
-          <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
-          <!--  </button>-->
-          <!--</div>-->
-        </form>
+                <!-- Bulk Action -->
+                <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
+                <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
+                <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
+                <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
+                <!--  </button>-->
+                <!--</div>-->
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
+      <br>
+      <!-- Table Nill Section -->
+      <div class="container-fluid mt-4">
+
+        <!-- Page Title -->
+        <h2 class="mb-4 text-center text-primary fw-bold">
+          📊 Nill Records
+        </h2>
+
+        <!-- Card Wrapper -->
+        <div class="card shadow-lg border-0 rounded-3">
+          <div class="card-body">
+
+            <!-- Scrollable Table -->
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+              <form method="get" action="/scan/">
+                {% csrf_token %}
+                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+                  <thead class="table-dark sticky-top">
+                    <tr>
+                      <th scope="col">
+                        <input type="checkbox" id="selectAll" class="form-check-input">
+                      </th>
+                      <th scope="col">#</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">ADDL</th>
+                      <th scope="col">Item Code</th>
+                      <th scope="col">Item Name</th>
+                      <th scope="col">Size</th>
+                      <th scope="col">MRP</th>
+                      <th scope="col">Brand</th>
+                      <th scope="col">Section</th>
+                      <th scope="col">Season</th>
+                      <th scope="col">Colours</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in display2 %}
+                    <tr>
+
+                      <td>
+                        <input type="checkbox" name="selected_itemsN" value="{{ row.id }}" class="form-check-input">
+                      </td>
+                      <td>{{ row.id }}</td>
+                      <td>{{ row.loc_rec }}</td>
+                      <td>{{ row.add_item_list }}</td>
+                      <td>{{ row.ITEMCODE }}</td>
+                      <td>{{ row.ITEMNAME }}</td>
+                      <td>{{ row.SIZE }}</td>
+                      <td>{{ row.MRP }}</td>
+                      <td>{{ row.BRANDNAME }}</td>
+                      <td>{{ row.SECTION }}</td>
+                      <td>{{ row.SEASON }}</td>
+                      <td>{{ row.COLOURS }}</td>
+                      <td>
+                        <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
+                          <i class="bi bi-trash"></i> Delete
+                        </button>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="13" class="text-center text-muted">No records found</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+                <!-- Bulk Action -->
+                <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
+                <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
+                <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
+                <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
+                <!--  </button>-->
+                <!--</div>-->
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      const toggle = document.getElementById("menu-toggle");
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script >
-   const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const toggle = document.getElementById("menu-toggle");
+      toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+        overlay.classList.toggle("active");
+      });
 
-    toggle.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-      overlay.classList.toggle("active");
-    });
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+      });
 
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("active");
-      overlay.classList.remove("active");
-    });
+      <!-- ✅ Script for Select All -->
 
-            <!-- ✅ Script for Select All -->
-
-    document.getElementById("selectAll").addEventListener("click", function () {
+      document.getElementById("selectAll").addEventListener("click", function () {
         let checkboxes = document.querySelectorAll('input[name="selected_items"]');
         checkboxes.forEach(cb => cb.checked = this.checked);
-    });
+      });
 
-    document.getElementById("selectAll").addEventListener("click", function () {
+      document.getElementById("selectAll").addEventListener("click", function () {
         let checkboxes = document.querySelectorAll('input[name="selected_itemsE"]');
         checkboxes.forEach(cb => cb.checked = this.checked);
-    });
+      });
 
-    document.getElementById("selectAll").addEventListener("click", function () {
+      document.getElementById("selectAll").addEventListener("click", function () {
         let checkboxes = document.querySelectorAll('input[name="selected_itemsN"]');
         checkboxes.forEach(cb => cb.checked = this.checked);
-    });
+      });
 
-  </script>
+    </script>
 
 </body>
+
 </html>
 
 
 
 </body>
-</html>
 
+</html>

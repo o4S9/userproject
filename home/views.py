@@ -635,39 +635,30 @@ def upload_scanning(request):
                'id', 'add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
                 'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
             )
-    if request.method == "POST":
-        Edelete = request.POST.get('selected_itemsE')
-        Ndelete = request.POST.get('selected_itemsN')
+    if request.method == "GET":
+        Edelete = request.GET.get('selected_itemsE')
+        Ndelete = request.GET.get('selected_itemsN')
         if Edelete:
-            print(Edelete)
-            # product = loctionRecords.objects.get(id=Edelete)  # find row with id=1
-            # product.delete()
-            # master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
-            # result = loctionRecords.objects.annotate(
-            #         ITEMCODE=Subquery(master_qs.values('EANCODE')[:1]),
-            #         ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
-            #         SIZE=Subquery(master_qs.values('SIZE')[:1]),
-            #         MRP=Subquery(master_qs.values('MRP')[:1]),
-            #         BRANDNAME=Subquery(master_qs.values('BRAND')[:1]),
-            #         SECTION=Subquery(master_qs.values('SECTION')[:1]),
-            #         SEASON=Subquery(master_qs.values('SEASON')[:1]),
-            #         COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
-            #         ).values(
-            #             'id', 'add_item_list', 'loc_rec','ITEMCODE',
-            #             'ITEMNAME', 'SIZE', 'MRP', 'BRANDNAME',
-            #             'SECTION', 'SEASON', 'COLOURS'
-            #         )
-            # msg1 = "Record delete!"
-            # messages.success(request, msg1)
+            # print(Edelete)
+            product = ExcessRecordScanning.objects.get(id=Edelete)  # find row with id=1
+            product.delete()
+           
+            msg1 = "Record delete!"
+            messages.success(request, msg1)
 
-            # return render(request,'Data_Entry.html',{"result":result})
+            return render(request,'importScanningFIle.html',{"display":result,"display1":result2,"display2":result1})
         elif Ndelete:
-            print(Ndelete)
-            pass
+            # print(Ndelete)
+            product = ExcessScanning.objects.get(id=Ndelete)  # find row with id=1
+            product.delete()           
+            msg1 = "Record delete!"
+            messages.success(request, msg1)
+            return render(request,'importScanningFIle.html',{"display":result,"display2":result1,"display1":result2})
     return render(request,'importScanningFIle.html',{"display":result,"display1":result2,"display2":result1})
     # scanRec = loctionRecords.objects.all()
     # excessRec = ExcessScanning.objects.all()
     # return render(request,'importScanningFIle.html',{'display':scanRec,'edisplay':excessRec})
+
 
 from .models import MasterData,loctionRecords,ExcessRecordScanning,ExcessScanning
 def downloadScan(request):
@@ -730,10 +721,10 @@ def downloadScan(request):
         else:
             pass
             # print(status)
-
+    
     if request.method == "POST":
         Download = request.POST.get('download')
-        print('status :',Download)
+        # print('status :',Download)
         if Download == "Scanning":
             # print(download)
             # print(download)
@@ -828,7 +819,15 @@ def downloadScan(request):
 
             return response                
             
-
+    if request.method == 'GET':
+        ln = request.GET.get('locationNo')
+        addl = request.GET.get('addl')
+        # print(ln,addl)
+        if ln:
+            print(ln)
+        elif addl:
+            print(ln,addl)
+        
 
     return render(request,'downloadScanningData.html',{'display':result})
 
