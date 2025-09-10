@@ -175,6 +175,7 @@ def dataEntry(request):
         if addl == '':
             messages.error(request, "Please enter a barcode!")
         elif Selected_barcode:
+            print('Select_Barcode:',addl)
             # barcode = StockData(scanningdata_id = addl)
             barData = loctionRecords(loc_rec = loc,add_item_list = addl)
             location_count = loctionRecords.objects.exclude(loc_rec = loc).count()
@@ -621,15 +622,15 @@ def upload_scanning(request):
 
     master_qs1 = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
     result1 = ExcessScanning.objects.annotate(
-                ITEMCODE=Subquery(master_qs2.values('ITEMCODE')[:1]),
-                ITEMNAME=Subquery(master_qs2.values('ITEMNAME')[:1]),
-                SIZE=Subquery(master_qs2.values('SIZE')[:1]),
-                MRP=Subquery(master_qs2.values('MRP')[:1]),
-                BRANDNAME=Subquery(master_qs2.values('BRANDNAME')[:1]),
-                SECTION=Subquery(master_qs2.values('SECTION')[:1]),
-                BASICRATE=Subquery(master_qs2.values('BASICRATE')[:1]),
-                SEASON=Subquery(master_qs2.values('SEASON')[:1]),
-                COLOURS=Subquery(master_qs2.values('COLOURS')[:1]),
+                ITEMCODE=Subquery(master_qs1.values('ITEMCODE')[:1]),
+                ITEMNAME=Subquery(master_qs1.values('ITEMNAME')[:1]),
+                SIZE=Subquery(master_qs1.values('SIZE')[:1]),
+                MRP=Subquery(master_qs1.values('MRP')[:1]),
+                BRANDNAME=Subquery(master_qs1.values('BRANDNAME')[:1]),
+                SECTION=Subquery(master_qs1.values('SECTION')[:1]),
+                BASICRATE=Subquery(master_qs1.values('BASICRATE')[:1]),
+                SEASON=Subquery(master_qs1.values('SEASON')[:1]),
+                COLOURS=Subquery(master_qs1.values('COLOURS')[:1]),
             ).values(
                 'add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
                 'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
@@ -645,73 +646,150 @@ def downloadScan(request):
     # scanRec = loctionRecords.objects.all().values()
     # lis = list(scanRec)
     # print(lis)
-    master_qs = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
+    master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
     result = loctionRecords.objects.annotate(
-                ITEMCODE=Subquery(master_qs.values('ITEMCODE')[:1]),
+                ITEMCODE=Subquery(master_qs.values('EANCODE')[:1]),
                 ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
                 SIZE=Subquery(master_qs.values('SIZE')[:1]),
                 MRP=Subquery(master_qs.values('MRP')[:1]),
-                BRANDNAME=Subquery(master_qs.values('BRANDNAME')[:1]),
+                BRANDNAME=Subquery(master_qs.values('BRAND')[:1]),
                 SECTION=Subquery(master_qs.values('SECTION')[:1]),
-                BASICRATE=Subquery(master_qs.values('BASICRATE')[:1]),
                 SEASON=Subquery(master_qs.values('SEASON')[:1]),
                 COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
             ).values(
                 'add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
                 'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
             )
-    # master_qs1 = ExcessRecordScanning.objects.all().values()
-
-
-    # master_qs2 = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
-    # result2 = ExcessRecordScanning.objects.annotate(
-    #             ITEMCODE=Subquery(master_qs2.values('ITEMCODE')[:1]),
-    #             ITEMNAME=Subquery(master_qs2.values('ITEMNAME')[:1]),
-    #             SIZE=Subquery(master_qs2.values('SIZE')[:1]),
-    #             MRP=Subquery(master_qs2.values('MRP')[:1]),
-    #             BRANDNAME=Subquery(master_qs2.values('BRANDNAME')[:1]),
-    #             SECTION=Subquery(master_qs2.values('SECTION')[:1]),
-    #             BASICRATE=Subquery(master_qs2.values('BASICRATE')[:1]),
-    #             SEASON=Subquery(master_qs2.values('SEASON')[:1]),
-    #             COLOURS=Subquery(master_qs2.values('COLOURS')[:1]),
-    #         ).values(
-    #             'add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
-    #             'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
-    #         )
-    # print(result)
-    # return render(request,'importScanningFIle.html',{"display":result})
-    if request.method == "POST":
-        download = request.POST.get('download')
-        # print(download)
-        if download == "download":
-            data = list(result)   # result is your queryset with annotate()
-                        # data = list(result)   # result is your queryset with annotate()
-              # Create DataFrame
-            df = pd.DataFrame(data)
-            # Load into Pandas DataFrame
-            excel_buffer = BytesIO()
-
-            # Use ExcelWriter and specify a sheet name
-            with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
-                # Ensure at least one visible sheet is written
-                if not df.empty:
-                    df.to_excel(writer, index=False, sheet_name='Data')
-                else:
-                    # Create an empty sheet with headers only
-                    pd.DataFrame(columns=["name", "price"]).to_excel(writer, index=False, sheet_name='Data')
-
-            # Seek to the beginning of the BytesIO buffer
-            excel_buffer.seek(0)
-
-            # Create the HTTP response
-            response = HttpResponse(
-                excel_buffer.getvalue(),
-                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    master_qs2 = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
+    result2 =ExcessRecordScanning.objects.annotate(
+            ITEMCODE=Subquery(master_qs2.values('ITEMCODE')[:1]),
+            ITEMNAME=Subquery(master_qs2.values('ITEMNAME')[:1]),
+            SIZE=Subquery(master_qs2.values('SIZE')[:1]),
+            MRP=Subquery(master_qs2.values('MRP')[:1]),
+            BRANDNAME=Subquery(master_qs2.values('BRANDNAME')[:1]),
+            SECTION=Subquery(master_qs2.values('SECTION')[:1]),
+            BASICRATE=Subquery(master_qs2.values('BASICRATE')[:1]),
+            SEASON=Subquery(master_qs2.values('SEASON')[:1]),
+            COLOURS=Subquery(master_qs2.values('COLOURS')[:1]),
+            ).values(
+                'id','add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
+                'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
             )
-            response['Content-Disposition'] = 'attachment; filename=ScanningData.xlsx'
+    master_qs1 = MasterData.objects.filter(ADDL=OuterRef('add_item_list'))
+    result1 = ExcessScanning.objects.annotate(
+                ITEMCODE=Subquery(master_qs1.values('ITEMCODE')[:1]),
+                ITEMNAME=Subquery(master_qs1.values('ITEMNAME')[:1]),
+                SIZE=Subquery(master_qs1.values('SIZE')[:1]),
+                MRP=Subquery(master_qs1.values('MRP')[:1]),
+                BRANDNAME=Subquery(master_qs1.values('BRANDNAME')[:1]),
+                SECTION=Subquery(master_qs1.values('SECTION')[:1]),
+                BASICRATE=Subquery(master_qs1.values('BASICRATE')[:1]),
+                SEASON=Subquery(master_qs1.values('SEASON')[:1]),
+                COLOURS=Subquery(master_qs1.values('COLOURS')[:1]),
+            ).values(
+                'add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
+                'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
+            )
 
-            return response
+    if request.method == "POST":
+        Download = request.POST.get('download')
+        print('status :',Download)
+        if Download == "Scanning":
+            # print(download)
+            if Download == "Scanning":                
+                # print(download)
+                data = list(result)   # result is your queryset with annotate()
+                # data = list(result)   # result is your queryset with annotate()
+                # Create DataFrame
+                df = pd.DataFrame(data)
+                # Load into Pandas DataFrame
+                excel_buffer = BytesIO()
 
+                # Use ExcelWriter and specify a sheet name
+                with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+                    # Ensure at least one visible sheet is written
+                    if not df.empty:
+                        df.to_excel(writer, index=False, sheet_name='Data')
+                    else:
+                        # Create an empty sheet with headers only
+                        pd.DataFrame(columns=["name", "price"]).to_excel(writer, index=False, sheet_name='Data')
+
+                # Seek to the beginning of the BytesIO buffer
+                excel_buffer.seek(0)
+
+                # Create the HTTP response
+                response = HttpResponse(
+                    excel_buffer.getvalue(),
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=ScanningData.xlsx'
+
+                return response
+            return render(request,'downloadScanningData.html',{'display':result})
+
+        elif Download == "Excess":
+            # print(download)
+            if Download == "Excess":
+                data = list(result2)   # result is your queryset with annotate()
+                            # data = list(result)   # result is your queryset with annotate()
+                  # Create DataFrame
+                df = pd.DataFrame(data)
+                # Load into Pandas DataFrame
+                excel_buffer = BytesIO()
+
+                # Use ExcelWriter and specify a sheet name
+                with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+                    # Ensure at least one visible sheet is written
+                    if not df.empty:
+                        df.to_excel(writer, index=False, sheet_name='Data')
+                    else:
+                        # Create an empty sheet with headers only
+                        pd.DataFrame(columns=["name", "price"]).to_excel(writer, index=False, sheet_name='Data')
+
+                # Seek to the beginning of the BytesIO buffer
+                excel_buffer.seek(0)
+
+                # Create the HTTP response
+                response = HttpResponse(
+                    excel_buffer.getvalue(),
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=ExcessScanningData.xlsx'
+
+                return response                
+            return render(request,'downloadScanningData.html',{'display':result2})
+        
+        elif Download == "Nill":
+            # print(download)
+            if Download == "Nill":
+                data = list(result1)   # result is your queryset with annotate()
+                            # data = list(result)   # result is your queryset with annotate()
+                  # Create DataFrame
+                df = pd.DataFrame(data)
+                # Load into Pandas DataFrame
+                excel_buffer = BytesIO()
+
+                # Use ExcelWriter and specify a sheet name
+                with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
+                    # Ensure at least one visible sheet is written
+                    if not df.empty:
+                        df.to_excel(writer, index=False, sheet_name='Data')
+                    else:
+                        # Create an empty sheet with headers only
+                        pd.DataFrame(columns=["name", "price"]).to_excel(writer, index=False, sheet_name='Data')
+
+                # Seek to the beginning of the BytesIO buffer
+                excel_buffer.seek(0)
+
+                # Create the HTTP response
+                response = HttpResponse(
+                    excel_buffer.getvalue(),
+                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+                response['Content-Disposition'] = 'attachment; filename=NillScanningData.xlsx'
+
+                return response                
+            return render(request,'downloadScanningData.html',{'display':result1})
 
 
     return render(request,'downloadScanningData.html',{'display':result})

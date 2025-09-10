@@ -40,38 +40,57 @@
       transition: all 0.3s;
     }
 
-    /* Hide sidebar and shift content for small screens */
-    @media (max-width: 768px) {
-      .sidebar {
-        left: -250px;
-      }
+    /* Sidebar adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                height: 100%;
+                transition: left 0.3s ease;
+            }
 
-      .sidebar.active {
-        left: 0;
-      }
+            .sidebar.active {
+                left: 0;
+            }
 
-      .main-content {
-        margin-left: 0;
-      }
+            .main-content {
+                margin-left: 0;
+            }
+        }
 
-      .overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        top: 0;
-        left: 0;
-        z-index: 1040;
-      }
+        /* Hide sidebar and shift content for small screens */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
 
-      .overlay.active {
-        display: block;
-      }
-    }
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                top: 0;
+                left: 0;
+                z-index: 1040;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+        }
   </style>
 </head>
-<body>
+<body onload="displayStatus()">
 
   <!-- Toggle Button (hamburger) -->
   <nav class="navbar bg-dark d-md-none">
@@ -82,21 +101,50 @@
   </nav>
 
      <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <h4 class="text-start">Audit-Manager</h4>
-        <h5>Welcome {{request.user}}</h5>
-        <hr style="border-color: rgba(255, 255, 255, 0.2)">
-        <a href="/">🏠 Home</a>
-        <a href="/scand">📷Download-Scanning-File</a>
-
-
-    </div>
+<div class="sidebar" id="sidebar">
+    <h4 class="text-start">Audit-Manager</h4>
+    <h5>Welcome {{request.user}}</h5>
+    <hr style="border-color: rgba(255, 255, 255, 0.2)">
+    <a href="/">🏠 Home</a>
+    <a href="/master">📁 Master-File</a>
+    <a href="/upload/">📦 Stock-File</a>
+    <a href="/stockdata">📦 Stock-Record</a>
+    <a href="/masterdata">📈 Master-Record</a>
+    <a href="/scanner">📷 Scanning-File</a>
+    <a href="/scand">📷Download-Scanning-File</a>
+    <a href="/ss">🔄 Difference (Stock & Scan)</a>
+    <a href="/logout">🔓 Logout</a>
+  </div>
 
  <!-- Main Content -->
   <div class="main-content">
   <div class="container">
     <h2 class="mb-4">Download-Scanning Excel File</h2>
-   
+
+    <div class="container py-4">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card shadow-sm p-3">
+            <h5 class="mb-3">Select Status</h5>
+
+            
+
+              <div class="mb-3">
+                <label for="status" class="form-label">Choose Status:</label>
+                <select id="status" name="status" class="form-select">
+                  <option value="Scanning">Scanning-Sheet</option>
+                  <option value="Excess">Excess-Sheet</option>
+                  <option value="Nill">Nill-Sheet</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" onclick="ls()">Apply</button>
+           
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Table Section -->
     <div class="card shadow-lg border-0">
         <div class="card-body">
@@ -106,19 +154,31 @@
                 <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
                     <thead class="table-dark sticky-top">
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Location No</th>
+                            <th scope="col">Location:</th>
                             <th scope="col">ADDL</th>
+                            <th scope="col">ITEMCODE</th>
+                            <th scope="col">ITEMNAME</th>
+                            <th scope="col">SIZE</th>
+                            <th scope="col">MRP</th>
+                            <th scope="col">BRAND</th>
+                            <th scope="col">SECTION</th>
+                            <th scope="col">SEASON</th>
+                            <th scope="col">COLOURS</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for row in display %}
                         <tr>
-                            <td>{{ row.id }}</td>
-                            <td>{{ row.my_date }}</td>
                             <td>{{ row.loc_rec }}</td>
                             <td>{{ row.add_item_list }}</td>
+                            <td>{{ row.ITEMCODE }}</td>
+                            <td>{{ row.ITEMNAME }}</td>
+                            <td>{{ row.SIZE }}</td>
+                            <td>{{ row.MRP }}</td>
+                            <td>{{ row.BRANDNAME }}</td>
+                            <td>{{ row.SECTION }}</td>
+                            <td>{{ row.SEASON }}</td>
+                            <td>{{ row.COLOURS }}</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -128,17 +188,19 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
-        <!-- Download Button -->
-   <div class="container mb-3">
+        <br>
+         <!-- Download Button -->
+     <div class="container mb-3">
       <form action="" method="post">
         {% csrf_token %}
-        <input type="download" name="download" value="download" style="display: none;">
+        <input name="download" value="" id="myInput" readonly>
         <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
       </form>
     </div>
+   
 </div>
+    
   <script >
    const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
@@ -152,14 +214,27 @@
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("active");
       overlay.classList.remove("active");
-    }); 
+    });
+
+ function ls() {
+      let status = document.getElementById("status").value;
+      localStorage.setItem("DownloadStatus", status);
+      displayStatus();
+    }
+    function displayStatus() {
+      let storedValue = localStorage.getItem("DownloadStatus");
+      document.getElementById("myInput").value = storedValue || ""; // avoid null
+
+    }
+    window.onload = displayStatus;
+
   </script>
 
 </body>
 </html>
 
 
- 
+
 </body>
 </html>
 
