@@ -127,8 +127,8 @@
           <div class="card shadow-sm p-3">
             <h5 class="mb-3">Select Status</h5>
 
-            
-
+        <form action="" method="post">
+        {% csrf_token %}
               <div class="mb-3">
                 <label for="status" class="form-label">Choose Status:</label>
                 <select id="status" name="status" class="form-select">
@@ -139,7 +139,7 @@
               </div>
 
               <button type="submit" class="btn btn-primary w-100" onclick="ls()">Apply</button>
-           
+        </form>
           </div>
         </div>
       </div>
@@ -194,7 +194,7 @@
      <div class="container mb-3">
       <form action="" method="post">
         {% csrf_token %}
-        <input name="download" value="" id="myInput" readonly>
+        <input text="text" name="download" value="" id="myInput" readonly>
         <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
       </form>
     </div>
