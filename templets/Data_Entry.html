@@ -268,7 +268,7 @@
                                             <div class="mb-2">
                                                 <label for="addl" class="form-label">Add Item</label>
                                                 <input type="text" name="" id="addl" class="form-control"
-                                                    placeholder="Enter Item Code" >
+                                                    placeholder="Enter Item Code"  autocomplete="off" autofocus />
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-sm w-100" onclick="ac()">
                                                 Submit
@@ -530,17 +530,20 @@
 
 
   // Auto-submit when scanner sends "Enter"
-            // inputField.addEventListener("keypress", function (event) {
-            //     if (event.key === "Enter") {
-            //         event.preventDefault(); // stop default form behavior
-            //         form.submit();          // auto-submit
-            //     }
-            // });
+  // const form = document.getElementById("scanForm");
+  // const inputField = document.getElementById("addl");
+  //           inputField.addEventListener("keypress", function (event) {
+  //               if (event.key === "Enter") {
+  //                   event.preventDefault(); // stop default form behavior
+  //                   form.submit();          // auto-submit
+  //                   ac()
+  //               }
+  //           });
 
-            // (Optional) Auto-submit after input is filled (scanner types fast)
-            // inputField.addEventListener("change", function () {
-            //   form.submit();
-            // });
+  //           // (Optional) Auto-submit after input is filled (scanner types fast)
+  //           inputField.addEventListener("change", function () {
+  //             form.submit();
+  //           });
 
             <!-- ✅ Script for Select All -->
 

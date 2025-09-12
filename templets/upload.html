@@ -41,35 +41,54 @@
       transition: all 0.3s;
     }
 
-    /* Hide sidebar and shift content for small screens */
-    @media (max-width: 768px) {
-      .sidebar {
-        left: -250px;
-      }
+     /* Sidebar adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                height: 100%;
+                transition: left 0.3s ease;
+            }
 
-      .sidebar.active {
-        left: 0;
-      }
+            .sidebar.active {
+                left: 0;
+            }
 
-      .main-content {
-        margin-left: 0;
-      }
+            .main-content {
+                margin-left: 0;
+            }
+        }
 
-      .overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        top: 0;
-        left: 0;
-        z-index: 1040;
-      }
+        /* Hide sidebar and shift content for small screens */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
 
-      .overlay.active {
-        display: block;
-      }
-    }
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                top: 0;
+                left: 0;
+                z-index: 1040;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+        }
   </style>
 </head>
 
@@ -89,13 +108,13 @@
     <h5>Welcome {{request.user}}</h5>
     <hr style="border-color: rgba(255, 255, 255, 0.2)">
     <a href="/">🏠 Home</a>
-    <a href="/master" onclick="Master_File()">📁 Master-File</a>
+    <a href="/master">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
+    <a href="/stockdata">📦 Stock-Record</a>
+    <a href="/masterdata">📈 Master-Record</a>
     <a href="/scanner">📷 Scanning-File</a>
+    <a href="/scand">📷Download-Scanning-File</a>
     <a href="/ss">🔄 Difference (Stock & Scan)</a>
-    <a href="/short">📉 Short-File</a>
-    <a href="/excess">📈 Excess-File</a>
-    <a href="">🧾 SIExcess-File</a>
     <a href="/logout">🔓 Logout</a>
   </div>
 
@@ -120,27 +139,40 @@
           <table class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-dark text-center sticky-top">
               <tr>
-                <th>Addl</th>
-                <th>Barcode</th>
-                <th>Article No</th>
-                <th>Size</th>
-                <th>Section</th>
-                <th>MRP</th>
-               
+                  <th>ID</th>
+                  <th>Date</th>
+                <th>Stock File</th>
+                <!--<th>Article No</th>-->
+                <!--<th>Size</th>-->
+                <!--<th>Section</th>-->
+                <!--<th>MRP</th>-->
+
               </tr>
             </thead>
             <tbody>
-              {% for row in result %}
+              {% for row in filerecord %}
               <tr>
-                <td>{{ row.EANCODE }}</td>
-                <td>{{ row.BARCODE }}</td>
-                <td>{{ row.ARTICLENO }}</td>
-                <td>{{ row.SIZE }}</td>
-                <td>{{ row.SECTION }}</td>
-                <td>{{ row.MRP }}</td>
-               
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.date }}</td>
+                <td>{{ row.file }}</td>
+              <!--  <td><button type="submit" class="btn btn-primary w-100" onclick="ls()">Delete File</button></td>-->
+                <!--<td>{{ row.ARTICLENO }}</td>-->
+                <!--<td>{{ row.SIZE }}</td>-->
+                <!--<td>{{ row.SECTION }}</td>-->
+                <!--<td>{{ row.MRP }}</td>-->
+
               </tr>
               {% endfor %}
+<!--              {% for row in filerecord %}-->
+<!--<tr>-->
+  <!--<td>{{ row.file }}</td>-->
+<!--    <form method="post" >-->
+<!--      {% csrf_token %}-->
+<!--     <td> <input type="text" name="filename" value="{{ row.file }}" readonly></td>-->
+<!--    </form>-->
+<!--</tr>-->
+<!--{% endfor %}-->
+
             </tbody>
           </table>
         </div>
@@ -149,6 +181,53 @@
         <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
 
       </div>
+            <!-- Delete Card -->
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+          <h4 class="card-title text-center text-danger mb-3">🗑 Delete Record</h4>
+
+          <form method="get" action="/upload/">
+            {% csrf_token %}
+
+            <!-- Delete Record  -->
+            <div class="mb-3">
+                <label for="status" class="form-label">Choose Status:</label>
+                <select id="status" name="status" class="form-select">
+                  <option value="">Please Choose Option</option>
+                  <option value="Stock">Stock File Data</option>
+
+                </select>
+              </div>
+
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-danger w-100">
+              Delete Record
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+{% if messages %}
+<div class="container mt-2">
+{% for message in messages %}
+<div class="alert
+{% if message.tags == 'success' %} alert-success
+{% elif message.tags == 'error' %} alert-danger
+{% else %} alert-info {% endif %}
+alert-dismissible fade show" role="alert">
+
+{{ message }}
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+</div>
+</div>
+
     </div>
     <script>
       const sidebar = document.getElementById("sidebar");
@@ -163,7 +242,7 @@
       overlay.addEventListener("click", () => {
         sidebar.classList.remove("active");
         overlay.classList.remove("active");
-      }); 
+      });
     </script>
 
 </body>

@@ -44,35 +44,54 @@
       transition: all 0.3s;
     }
 
-    /* Hide sidebar and shift content for small screens */
-    @media (max-width: 768px) {
-      .sidebar {
-        left: -250px;
-      }
+     /* Sidebar adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                height: 100%;
+                transition: left 0.3s ease;
+            }
 
-      .sidebar.active {
-        left: 0;
-      }
+            .sidebar.active {
+                left: 0;
+            }
 
-      .main-content {
-        margin-left: 0;
-      }
+            .main-content {
+                margin-left: 0;
+            }
+        }
 
-      .overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        top: 0;
-        left: 0;
-        z-index: 1040;
-      }
+        /* Hide sidebar and shift content for small screens */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
 
-      .overlay.active {
-        display: block;
-      }
-    }
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                top: 0;
+                left: 0;
+                z-index: 1040;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+        }
   </style>
 </head>
 
@@ -94,11 +113,10 @@
     <a href="/">🏠 Home</a>
     <a href="/master">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
+    <a href="/stockdata">📦 Stock-Record</a>
+    <a href="/masterdata">📈 Master-Record</a>
     <a href="/scanner">📷 Scanning-File</a>
     <a href="/ss">🔄 Difference (Stock & Scan)</a>
-    <a href="/short">📉 Short-File</a>
-    <a href="/excess">📈 Excess-File</a>
-    <a href="">🧾 SIExcess-File</a>
     <a href="/logout">🔓 Logout</a>
   </div>
 
@@ -121,7 +139,7 @@
 
             <form method="post">
               {% csrf_token %}
-            
+
               <div class="mb-3">
                 <label for="status" class="form-label">Choose Status:</label>
                 <select id="status" name="status" class="form-select">
@@ -183,32 +201,38 @@
       </div>
     </div>
     <br>
-    <div class="container mb-3">
-      <form action="" method="post">
-        {% csrf_token %}
-        <input name="download" value="" id="myInput" readonly>
-        <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
-      </form>
-    </div>
-    <!-- <div class="container mb-3"> -->
-    <!-- <form action="" method="post" class="w-100"> -->
-    <!-- {% csrf_token %} -->
-    <!-- <div class="row g-2 align-items-center"> -->
-    <!-- Input -->
-    <!-- <div class="col-8 col-md-10">
-            <input type="download" name="download" value="" id="myInput" readonly class="form-control"
-              placeholder="Download file name...">
-          </div> -->
+    <!--<div class="container mb-3">-->
+    <!--  <form action="" method="post">-->
+    <!--    {% csrf_token %}-->
+    <!--    <input name="download" value="" id="myInput" readonly>-->
+    <!--    <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>-->
+    <!--  </form>-->
+    <!--</div>-->
+    <div class="container mb-4">
+  <form action="" method="post" class="row gy-2 gx-3 align-items-center">
+    {% csrf_token %}
 
-    <!-- Button -->
-    <!-- <div class="col-4 col-md-2 d-grid">
-            <button type="button" class="btn btn-success" onclick="downloadTable()">
-              📥 Download
-            </button>
-          </div>
-        </div>
-      </form>
-    </div> -->
+    <!-- Input Field (Readonly) -->
+    <div class="col-md-8 col-12">
+      <input
+        type="text"
+        name="download"
+        id="myInput"
+        value=""
+        readonly
+        class="form-control"
+        placeholder="Download file path will appear here"
+      >
+    </div>
+
+    <!-- Download Button -->
+    <div class="col-md-4 col-12 d-grid">
+      <button type="submit" class="btn btn-success" onclick="downloadTable()">
+        📥 Download Table
+      </button>
+    </div>
+  </form>
+</div>
 
 
   </div>

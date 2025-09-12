@@ -154,7 +154,8 @@
                 <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
                     <thead class="table-dark sticky-top">
                         <tr>
-                            <th scope="col">Location:</th>
+                            <th scope="col">#</th>
+                            <th scope="col">Location</th>
                             <th scope="col">ADDL</th>
                             <th scope="col">ITEMCODE</th>
                             <th scope="col">ITEMNAME</th>
@@ -169,6 +170,7 @@
                     <tbody>
                         {% for row in display %}
                         <tr>
+                            <td>{{ row.id }}</td>
                             <td>{{ row.loc_rec }}</td>
                             <td>{{ row.add_item_list }}</td>
                             <td>{{ row.ITEMCODE }}</td>
@@ -197,12 +199,9 @@
         <input text="text" name="download" value="" id="myInput" readonly>
         <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
       </form>
-    </div>
-    <br>
-    <div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8 col-sm-12">
-
+    </div><br>
+    
+    
       <!-- Delete Card -->
       <div class="card shadow-lg border-0 rounded-4">
         <div class="card-body">
@@ -212,17 +211,17 @@
           <form method="get" action="/scand">
             {% csrf_token %}
 
-            <!-- Location -->
+            <!-- Delete Record  -->
             <div class="mb-3">
-              <label for="locationNo" class="form-label">Location No</label>
-              <input type="text" name="locationNo" id="locationNo" class="form-control" placeholder="Enter location no" required>
-            </div>
+                <label for="status" class="form-label">Choose Status:</label>
+                <select id="status" name="status" class="form-select">
+                  <option value="">Please Choose Option</option>
+                  <option value="Scanning">Scanning-Sheet</option>
+                  <option value="Excess">Excess-Sheet</option>
+                  <option value="Nill">Nill-Sheet</option>
+                </select>
+              </div>
 
-            <!-- ADDL -->
-            <div class="mb-3">
-              <label for="addl" class="form-label">ADDL</label>
-              <input type="text" name="addl" id="addl" class="form-control" placeholder="Enter ADDL code" required>
-            </div>
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-danger w-100">
@@ -234,8 +233,25 @@
 
     </div>
   </div>
+{% if messages %}
+<div class="container mt-2">
+{% for message in messages %}
+<div class="alert
+{% if message.tags == 'success' %} alert-success
+{% elif message.tags == 'error' %} alert-danger
+{% else %} alert-info {% endif %}
+alert-dismissible fade show" role="alert">
+
+{{ message }}
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<br>
+{% endfor %}
+</div>
+{% endif %}
+</div>
+
+
+                    <br>
    
 </div>
     

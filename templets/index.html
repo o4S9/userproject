@@ -44,35 +44,54 @@
       transition: all 0.3s;
     }
 
-    /* Hide sidebar and shift content for small screens */
-    @media (max-width: 768px) {
-      .sidebar {
-        left: -250px;
-      }
+ /* Sidebar adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                height: 100%;
+                transition: left 0.3s ease;
+            }
 
-      .sidebar.active {
-        left: 0;
-      }
+            .sidebar.active {
+                left: 0;
+            }
 
-      .main-content {
-        margin-left: 0;
-      }
+            .main-content {
+                margin-left: 0;
+            }
+        }
 
-      .overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        top: 0;
-        left: 0;
-        z-index: 1040;
-      }
+        /* Hide sidebar and shift content for small screens */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
 
-      .overlay.active {
-        display: block;
-      }
-    }
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                top: 0;
+                left: 0;
+                z-index: 1040;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+        }
   </style>
 </head>
 
@@ -94,12 +113,11 @@
     <a href="/">🏠 Home</a>
     <a href="/master">📁 Master-File</a>
     <a href="/upload/">📦 Stock-File</a>
+    <a href="/stockdata">📦 Stock-Record</a>
+    <a href="/masterdata">📈 Master-Record</a>
     <a href="/scanner">📷 Scanning-File</a>
     <a href="/scand">📷Download-Scanning-File</a>
     <a href="/ss">🔄 Difference (Stock & Scan)</a>
-    <a href="/short">📉 Short-File</a>
-    <a href="/excess">📈 Excess-File</a>
-    <a href="">🧾 SIExcess-File</a>
     <a href="/logout">🔓 Logout</a>
   </div>
 
@@ -118,6 +136,8 @@
             <h5 class="card-title text-info">Master File</h5>
             {% if Count %}
             <p class="display-6 fw-bold">{{Count}}</p>
+            {% else %}
+            <p class="display-6 fw-bold">0</p>
             {% endif %}
             <span class="text-muted">Total Master Items</span>
           </div>
@@ -131,6 +151,8 @@
             <h5 class="card-title text-success">Stock File</h5>
             {% if Scount %}
             <p class="display-6 fw-bold">{{Scount}}</p>
+            {% else %}
+            <p class="display-6 fw-bold">0</p>
             {% endif %}
             <span class="text-muted">Items in Stock File</span>
           </div>
@@ -144,6 +166,8 @@
             <h5 class="card-title text-warning">Scanning File</h5>
             {% if Sccount %}
             <p class="display-6 fw-bold">{{Sccount}}</p>
+            {% else %}
+            <p class="display-6 fw-bold">0</p>
             {% endif %}
             <span class="text-muted">Scanned Items</span>
           </div>
@@ -161,21 +185,38 @@
           </div>
         </div>
       </div>
-       <!-- Nill File Data Count -->
+      <!-- Nill File Data Count -->
       <div class="col-md-4 mb-4">
         <div class="card border-0 shadow h-100 text-center">
           <div class="card-body">
             <h5 class="card-title text-danger">Nill-Record Count</h5>
             {% if nill %}
-            <p class="display-6 fw-bold">{{nill}}</p>
+            <p class="display-6 fw-bold">{{ nill }}</p>
+            {% else %}
+            <p class="display-6 fw-bold">0</p>
             {% endif %}
             <span class="text-muted">Items in Nill File</span>
           </div>
         </div>
       </div>
+ <!--Difference Between File Data Count -->
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title text-danger">Difference Count</h5>
+            {% if Sccount > Scount %}
+            <p class="display-6 fw-bold">{{ difference }}</p>
+            {% elif Scount > Sccount %}
+            <p class="display-6 fw-bold">{{ differences }}</p>
+            {% else %}
+            <p class="display-6 fw-bold">0</p>
+            {% endif %}
+            <span class="text-muted">Items in Difference File</span>
+          </div>
+        </div>
+      </div>
 
     </div>
-
     {% comment %} 🔹 Search / Filter Form {% endcomment %}
     <div class="container mt-4">
       <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
@@ -197,12 +238,7 @@
                 </td>
                 <td>
                   <label for="itename" class="form-label">Item Name:</label>
-                  <input list="item_name" name="itename" id="itename" class="form-control">
-                  <datalist id="item_name">
-                    {% for item in masterPro %}
-                    <option value="{{item.ITEMNAME}}">
-                      {% endfor %}
-                  </datalist>
+                  <input type="text" name="itename" id="itename" class="form-control">
                 </td>
                 <td>
                   <button type="submit" class="btn btn-primary w-100">Show</button>
@@ -213,12 +249,6 @@
         </form>
       </div>
     </div>
-    <!-- <select id="itename" name="item_name">
-      {% for item in masterProducts %}
-      <option value=" {{ item.ITEMNAME }}"></option>
-
-      {% endfor %}
-    </select> -->
 
     {% comment %} 🔹 Card Layout for Items {% endcomment %}
     <div class="container mt-4">
@@ -235,13 +265,12 @@
               <p><strong>ADDL:</strong> {{ item.ADDL }}
                 <i class="fa-regular fa-copy copy-icon" onclick="copyText(this,'{{ item.ADDL }}')"></i>
               </p>
-              <p><strong>Item Code:</strong> {{ item.ITEMCODE }}
-
-              </p>
+              <p><strong>Item Code:</strong> {{ item.ITEMCODE }}</p>
               <p><strong>Size:</strong> {{ item.SIZE }}</p>
               <p><strong>MRP:</strong> ₹{{ item.MRP }}</p>
               <p><strong>Brand:</strong> {{ item.BRANDNAME }}</p>
               <p><strong>Section:</strong> {{ item.SECTION }}</p>
+              <p><strong>Basic Rate:</strong> ₹{{ item.BASICRATE }}</p>
               <p><strong>Season:</strong> {{ item.SEASON }}</p>
               <p><strong>Colours:</strong> {{ item.COLOURS }}</p>
             </div>
