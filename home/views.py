@@ -169,7 +169,7 @@ def dataEntry(request):
         # print("Loc & Addl: ",loc,addl)
         Selected_barcode = StockData.objects.filter(EANCODE=addl).first()
         Selected_barcode_Master = MasterData.objects.filter(ADDL = addl).first()
-        print(addl)
+        # print('Addl 1:',addl, loc)
         displayBarcode = loctionRecords.objects.all().values()
         locationno = loctionRecords.objects.filter(loc_rec = loc).first()
 
@@ -229,24 +229,24 @@ def dataEntry(request):
                             )
                 return render(request,'Data_Entry.html',{"result":result})
             return redirect('/dataEnter')
-        elif loc:
-            master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
-            result =loctionRecords.objects.filter(loc_rec=loc).annotate(
-                        ITEMCODE=Subquery(master_qs.values('EANCODE')[:1]),
-                        ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
-                        SIZE=Subquery(master_qs.values('SIZE')[:1]),
-                        MRP=Subquery(master_qs.values('MRP')[:1]),
-                        BRANDNAME=Subquery(master_qs.values('BRAND')[:1]),
-                        SECTION=Subquery(master_qs.values('SECTION')[:1]),
-                        SEASON=Subquery(master_qs.values('SEASON')[:1]),
-                        COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
-                        ).values(
-                            'id', 'add_item_list', 'loc_rec','ITEMCODE',
-                            'ITEMNAME', 'SIZE', 'MRP', 'BRANDNAME',
-                            'SECTION', 'SEASON', 'COLOURS'
-                        )
-            # print(result)
-            return render(request,'Data_Entry.html',{"result":result})
+        # elif loc:
+        #     master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
+        #     result =loctionRecords.objects.filter(loc_rec=loc).annotate(
+        #                 ITEMCODE=Subquery(master_qs.values('EANCODE')[:1]),
+        #                 ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
+        #                 SIZE=Subquery(master_qs.values('SIZE')[:1]),
+        #                 MRP=Subquery(master_qs.values('MRP')[:1]),
+        #                 BRANDNAME=Subquery(master_qs.values('BRAND')[:1]),
+        #                 SECTION=Subquery(master_qs.values('SECTION')[:1]),
+        #                 SEASON=Subquery(master_qs.values('SEASON')[:1]),
+        #                 COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
+        #                 ).values(
+        #                     'id', 'add_item_list', 'loc_rec','ITEMCODE',
+        #                     'ITEMNAME', 'SIZE', 'MRP', 'BRANDNAME',
+        #                     'SECTION', 'SEASON', 'COLOURS'
+        #                 )
+        #     # print(result)
+        #     return render(request,'Data_Entry.html',{"result":result})
         elif lc:
             location_count = loctionRecords.objects.filter(loc_rec=lc).count()
             # Match loctionRecords.add_item_list with MasterData.ADDL
@@ -290,7 +290,7 @@ def dataEntry(request):
             msg1 = "Record delete!"
             messages.success(request, msg1)
 
-            return render(request,'Data_Entry.html',{"result":result})
+        #     return render(request,'Data_Entry.html',{"result":result})
                 # return redirect('/dataEnter')
         # except loctionRecords.DoesNotExist:
         #
@@ -323,7 +323,7 @@ def dataEntry(request):
         #             messages.success(request, msg1)
 
 
-
+    
 
 
 
@@ -602,7 +602,7 @@ def upload_scanning(request):
         # fl = ["Master File :",file,]
         obj  = scanningFile.objects.create(file = file)
         createScan_bd(obj.file)
-        return redirect('/scan')
+        # return redirect('/scan')
 
     master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
     result = loctionRecords.objects.annotate(
@@ -650,24 +650,42 @@ def upload_scanning(request):
                'id', 'add_item_list','loc_rec', 'ITEMCODE', 'ITEMNAME', 'SIZE',
                 'MRP', 'BRANDNAME', 'SECTION', 'SEASON', 'COLOURS'
             )
-    if request.method == "GET":
-        Edelete = request.GET.get('selected_itemsE')
-        Ndelete = request.GET.get('selected_itemsN')
-        if Edelete:
-            # print(Edelete)
-            product = ExcessRecordScanning.objects.get(id=Edelete)  # find row with id=1
-            product.delete()
-            msg1 = "Record delete!"
-            messages.success(request, msg1)
-            return render(request,'importScanningFIle.html',{"display":result,"display1":result2,"display2":result1})
-        elif Ndelete:
-            # print(Ndelete)
-            product = ExcessScanning.objects.get(id=Ndelete)  # find row with id=1
-            product.delete()
-            msg1 = "Record delete!"
-            messages.success(request, msg1)
-            return render(request,'importScanningFIle.html',{"display":result,"display2":result1,"display1":result2})
-    return render(request,'importScanningFIle.html',{"display":result,"display1":result2,"display2":result1})
+    if request.method == 'GET':
+        status = request.GET.get('status')
+        delete = request.GET.get('selected_items')
+
+        print('Status :',status)
+        print('delete :',delete)
+
+        if status == 'Scanning':
+            print('Scac :',delete)
+            return render(request,'importScanningFIle.html',{'display':result})
+        elif status == 'Excess':
+            print('Exc :',delete)
+            return render(request,'importScanningFIle.html',{'display1':result2})
+        elif status == 'Nill':
+            print('Nil :',delete)
+            return render(request,'importScanningFIle.html',{'display':result1})
+        else:
+            pass
+    # if request.method == "GET":
+    #     Edelete = request.GET.get('selected_itemsE')
+    #     Ndelete = request.GET.get('selected_itemsN')
+    #     if Edelete:
+    #         # print(Edelete)
+    #         product = ExcessRecordScanning.objects.get(id=Edelete)  # find row with id=1
+    #         product.delete()
+    #         msg1 = "Record delete!"
+    #         messages.success(request, msg1)
+    #         return render(request,'importScanningFIle.html',{"display":result2})
+    #     elif Ndelete:
+    #         # print(Ndelete)
+    #         product = ExcessScanning.objects.get(id=Ndelete)  # find row with id=1
+    #         product.delete()
+    #         msg1 = "Record delete!"
+    #         messages.success(request, msg1)
+    #         return render(request,'importScanningFIle.html',{"display":result2})
+    return render(request,'importScanningFIle.html')
     # scanRec = loctionRecords.objects.all()
     # excessRec = ExcessScanning.objects.all()
     # return render(request,'importScanningFIle.html',{'display':scanRec,'edisplay':excessRec})

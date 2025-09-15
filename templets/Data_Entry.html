@@ -114,8 +114,8 @@
         <h5>Welcome {{request.user}}</h5>
         <hr style="border-color: rgba(255, 255, 255, 0.2)">
         <a href="/">🏠 Home</a>
-        <a href="/scanner">📷 Scanning-File</a>
-        <a href="/scan">📷 Scanning-Record</a>
+        <a href="/dataEnter">📷 Scanning-File</a>
+        <a href="/scan/">📷 Scanning-Record</a>
 
 
     </div>
@@ -191,42 +191,6 @@
 
 </div>
 
-                <!--<div class="container mt-4" id="Addloc">-->
-                <!--    <div class="row">-->
-                        <!-- Add Location Form -->
-                <!--        <div class="col-md-6 mb-4">-->
-                <!--            <div class="card shadow p-3">-->
-                <!--                <h5 class="card-title">Add Location</h5>-->
-                <!--                <form action="/dataEnter" method="post">-->
-                <!--                    {% csrf_token %}-->
-                <!--                    <div class="mb-3">-->
-                <!--                        <label for="lno" class="form-label">Add Location No:</label>-->
-                <!--                        <input type="text" name="lno" id="lno" class="form-control"-->
-                <!--                            placeholder="Enter Location">-->
-                <!--                    </div>-->
-                <!--                    <button type="submit" class="btn btn-primary w-100" onclick="ls()">Set-->
-                <!--                        Location</button>-->
-                <!--                </form>-->
-                <!--            </div>-->
-                <!--        </div>-->
-
-                        <!-- Count Data Form -->
-                <!--        <div class="col-md-6 mb-4" id="CountData">-->
-                <!--            <div class="card shadow p-3">-->
-                <!--                <h5 class="card-title">Count Data</h5>-->
-                <!--                <form action="/dataEnter" method="post">-->
-                <!--                    {% csrf_token %}-->
-                <!--                    <div class="mb-3">-->
-                <!--                        <label for="lc" class="form-label">Count Data:</label>-->
-                <!--                        <input type="text" name="lc" id="lc" class="form-control"-->
-                <!--                            placeholder="Enter Count">-->
-                <!--                    </div>-->
-                <!--                    <button type="submit" class="btn btn-success w-100">Count</button>-->
-                <!--                </form>-->
-                <!--            </div>-->
-                <!--        </div>-->
-                <!--    </div>-->
-                    <!-- Display Result -->
                     <div class="row">
                         <div class="col-12">
                             <div class="alert alert-info shadow">
@@ -267,8 +231,8 @@
                                         <td>
                                             <div class="mb-2">
                                                 <label for="addl" class="form-label">Add Item</label>
-                                                <input type="text" name="" id="addl" class="form-control"
-                                                    placeholder="Enter Item Code"  autocomplete="off" autofocus />
+                                                <input type="text" id="addl" class="form-control"
+                                                    placeholder="Enter Item Code"   autofocus />
                                             </div>
                                             <button type="submit" class="btn btn-primary btn-sm w-100" onclick="ac()">
                                                 Submit
@@ -471,34 +435,43 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // let loca = document.getElementById("loca").value;
-        let addl = document.getElementById("addl").value;
-        function submit() {
-            if (addl == '') {
-                alert("Please enter a barcode !")
-            }
+       // Optional: Capture when Enter is pressed after scan
+    document.getElementById("addl").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        // alert("Scanned Code: " + this.value);
+        const code = this.value.trim();
+        if (code) {
+          scans.push(code);  // Add to array
+          // localStorage.setItem("scans", JSON.stringify(scans)); // Save in localStorage
+          ls()
+           displayLoction();
+            displayAddl();
         }
-        // console.log("Location Set :"+ls)
-
-        // console.log("Location " + loca)
+            // displayLoction();
+            // displayAddl();
+            this.value = ""; // clear after scan
+      }
+    });
+      
+        
         function ls() {
             let lno = document.getElementById("lno").value;
             localStorage.setItem("Location", lno);
             displayLoction();
         }
-        function ac(){
-            let an = document.getElementById("addl").value;
-            localStorage.setItem("ADDL", an);
-            displayAddl();
-
-        }
+       
         function displayLoction() {
             let storedName = localStorage.getItem("Location");
             document.getElementById("myInput").value = localStorage.getItem("Location");
             document.getElementById("myInput1").value = localStorage.getItem("ADDL");
 
             // document.getElementById("output").innerText = storedName;
+        }
 
+         function ac(){
+            let an = document.getElementById("addl").value;
+            localStorage.setItem("ADDL", an);
+            displayAddl();
 
         }
         

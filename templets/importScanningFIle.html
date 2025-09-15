@@ -108,7 +108,7 @@
         <button class="btn btn-primary" type="submit">Import</button>
       </form>
     </div><br>
-    
+
     {% if messages %}
     <div class="container mt-2">
       {% for message in messages %}
@@ -156,36 +156,77 @@
     <!-- Django Messages -->
 
 
+    <div class="container">
+      <h2 class="mb-4 row justify-content-center">Scanning Excel File</h2>
 
+      <div class="container py-4">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm p-3">
+              <h5 class="mb-3">Select Status</h5>
 
+              <form action="" method="get">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="status" class="form-label">Choose Status:</label>
+                  <select id="status" name="status" class="form-select">
+                    <option value="Scanning">Scanning-Sheet</option>
+                    <option value="Excess">Excess-Sheet</option>
+                    <option value="Nill">Nill-Sheet</option>
+                  </select>
+                </div>
 
-    <!-- Table Section -->
-    <div class="card shadow-lg border-0">
-      <div class="card-body">
+                <button type="submit" class="btn btn-primary w-100" onclick="ls()">Apply</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <!-- Table Wrapper (scrollable) -->
-        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-          <h2 class="mb-4 text-center text-primary fw-bold">
-            📊 Scanning Records
-          </h2>
+<br>
+
+     <div class="container-fluid mt-4">
+
+  <!-- Page Title -->
+  <h2 class="mb-4 text-center text-primary fw-bold">
+    📊 Scanning Records
+  </h2>
+
+  <!-- Card Wrapper -->
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-body">
+
+      <!-- Scrollable Table -->
+      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <form method="get" action="/scan/">
+          {% csrf_token %}
           <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
             <thead class="table-dark sticky-top">
               <tr>
+                <th scope="col">
+                  <input type="checkbox" id="selectAll" class="form-check-input">
+                </th>
+                <th scope="col">#</th>
                 <th scope="col">Location</th>
                 <th scope="col">ADDL</th>
-                <th scope="col">ITEMCODE</th>
-                <th scope="col">ITEMNAME</th>
-                <th scope="col">SIZE</th>
+                <th scope="col">Item Code</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Size</th>
                 <th scope="col">MRP</th>
-                <th scope="col">BRAND</th>
-                <th scope="col">SECTION</th>
-                <th scope="col">SEASON</th>
-                <th scope="col">COLOURS</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Section</th>
+                <th scope="col">Season</th>
+                <th scope="col">Colours</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for row in display %}
               <tr>
+                <td>
+                  <input type="checkbox" name="selected_items" value="{{ row.id }}" class="form-check-input">
+                </td>
+                <td>{{ row.id }}</td>
                 <td>{{ row.loc_rec }}</td>
                 <td>{{ row.add_item_list }}</td>
                 <td>{{ row.ITEMCODE }}</td>
@@ -196,215 +237,124 @@
                 <td>{{ row.SECTION }}</td>
                 <td>{{ row.SEASON }}</td>
                 <td>{{ row.COLOURS }}</td>
+                <td>
+                  <button type="submit" name="delete_id" value="{{ row.id }}"
+                          class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
               </tr>
               {% empty %}
               <tr>
-                <td colspan="4" class="text-center text-muted">No records found</td>
+                <td colspan="13" class="text-center text-muted">No records found</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
-        </div>
+<div class="container-fluid mt-4">
+  <!-- Page Title -->
+  <h2 class="mb-4 text-center text-primary fw-bold">
+    📊 Scanning Records
+  </h2>
 
+  <!-- Card Wrapper -->
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-body">
+
+      <!-- Scrollable Table -->
+      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <form method="post" action="/dataEnter">
+          {% csrf_token %}
+          <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+            <thead class="table-dark sticky-top">
+              <tr>
+                <th scope="col">
+                  <input type="checkbox" id="selectAll" class="form-check-input">
+                </th>
+                <th scope="col">#</th>
+                <th scope="col">Location</th>
+                <th scope="col">ADDL</th>
+                <th scope="col">Item Code</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Size</th>
+                <th scope="col">MRP</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Section</th>
+                <th scope="col">Season</th>
+                <th scope="col">Colours</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in display1 %}
+              <tr>
+                <td>
+                  <input type="checkbox" name="selected_items" value="{{ row.id }}" class="form-check-input">
+                </td>
+                <td>{{ row.id }}</td>
+                <td>{{ row.loc_rec }}</td>
+                <td>{{ row.add_item_list }}</td>
+                <td>{{ row.ITEMCODE }}</td>
+                <td>{{ row.ITEMNAME }}</td>
+                <td>{{ row.SIZE }}</td>
+                <td>{{ row.MRP }}</td>
+                <td>{{ row.BRANDNAME }}</td>
+                <td>{{ row.SECTION }}</td>
+                <td>{{ row.SEASON }}</td>
+                <td>{{ row.COLOURS }}</td>
+                <td>
+                  <button type="submit" name="delete_id" value="{{ row.id }}"
+                          class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="13" class="text-center text-muted">No records found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+
+        <br>
+  
       </div>
-      <br>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        const toggle = document.getElementById("menu-toggle");
 
-      <!-- Table Excess Section -->
-      <div class="container-fluid mt-4">
+        toggle.addEventListener("click", () => {
+          sidebar.classList.toggle("active");
+          overlay.classList.toggle("active");
+        });
 
-        <!-- Page Title -->
-        <h2 class="mb-4 text-center text-primary fw-bold">
-          📊 Excess Records
-        </h2>
+        overlay.addEventListener("click", () => {
+          sidebar.classList.remove("active");
+          overlay.classList.remove("active");
+        });
 
-        <!-- Card Wrapper -->
-        <div class="card shadow-lg border-0 rounded-3">
-          <div class="card-body">
+        <!-- ✅ Script for Select All -->
 
-            <!-- Scrollable Table -->
-            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-              <form method="get" action="">
-                {% csrf_token %}
-                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
-                  <thead class="table-dark sticky-top">
-                    <tr>
-                      <th scope="col">
-                        <input type="checkbox" id="selectAll" class="form-check-input">
-                      </th>
-                      <th scope="col">#</th>
-                      <th scope="col">Location</th>
-                      <th scope="col">ADDL</th>
-                      <th scope="col">Item Code</th>
-                      <th scope="col">Item Name</th>
-                      <th scope="col">Size</th>
-                      <th scope="col">MRP</th>
-                      <th scope="col">Brand</th>
-                      <th scope="col">Section</th>
-                      <th scope="col">Season</th>
-                      <th scope="col">Colours</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for row in display1 %}
-                    <tr>
-                      <td>
-                        <input type="checkbox" name="selected_itemsE" value="{{ row.id }}" class="form-check-input">
-                      </td>
-                      <td>{{ row.id }}</td>
-                      <td>{{ row.loc_rec }}</td>
-                      <td>{{ row.add_item_list }}</td>
-                      <td>{{ row.ITEMCODE }}</td>
-                      <td>{{ row.ITEMNAME }}</td>
-                      <td>{{ row.SIZE }}</td>
-                      <td>{{ row.MRP }}</td>
-                      <td>{{ row.BRANDNAME }}</td>
-                      <td>{{ row.SECTION }}</td>
-                      <td>{{ row.SEASON }}</td>
-                      <td>{{ row.COLOURS }}</td>
-                      <td>
-                        <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
-                          <i class="bi bi-trash"></i> Delete
-                        </button>
-                      </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                      <td colspan="13" class="text-center text-muted">No records found</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+        document.getElementById("selectAll").addEventListener("click", function () {
+          let checkboxes = document.querySelectorAll('input[name="selected_items"]');
+          checkboxes.forEach(cb => cb.checked = this.checked);
+        });
 
-                <!-- Bulk Action -->
-                <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
-                <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
-                <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
-                <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
-                <!--  </button>-->
-                <!--</div>-->
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      <br>
-      <!-- Table Nill Section -->
-      <div class="container-fluid mt-4">
+        document.getElementById("selectAll").addEventListener("click", function () {
+          let checkboxes = document.querySelectorAll('input[name="selected_itemsE"]');
+          checkboxes.forEach(cb => cb.checked = this.checked);
+        });
 
-        <!-- Page Title -->
-        <h2 class="mb-4 text-center text-primary fw-bold">
-          📊 Nill Records
-        </h2>
+        document.getElementById("selectAll").addEventListener("click", function () {
+          let checkboxes = document.querySelectorAll('input[name="selected_itemsN"]');
+          checkboxes.forEach(cb => cb.checked = this.checked);
+        });
 
-        <!-- Card Wrapper -->
-        <div class="card shadow-lg border-0 rounded-3">
-          <div class="card-body">
-
-            <!-- Scrollable Table -->
-            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-              <form method="get" action="">
-                {% csrf_token %}
-                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
-                  <thead class="table-dark sticky-top">
-                    <tr>
-                      <th scope="col">
-                        <input type="checkbox" id="selectAll" class="form-check-input">
-                      </th>
-                      <th scope="col">#</th>
-                      <th scope="col">Location</th>
-                      <th scope="col">ADDL</th>
-                      <th scope="col">Item Code</th>
-                      <th scope="col">Item Name</th>
-                      <th scope="col">Size</th>
-                      <th scope="col">MRP</th>
-                      <th scope="col">Brand</th>
-                      <th scope="col">Section</th>
-                      <th scope="col">Season</th>
-                      <th scope="col">Colours</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for row in display2 %}
-                    <tr>
-
-                      <td>
-                        <input type="checkbox" name="selected_itemsN" value="{{ row.id }}" class="form-check-input">
-                      </td>
-                      <td>{{ row.id }}</td>
-                      <td>{{ row.loc_rec }}</td>
-                      <td>{{ row.add_item_list }}</td>
-                      <td>{{ row.ITEMCODE }}</td>
-                      <td>{{ row.ITEMNAME }}</td>
-                      <td>{{ row.SIZE }}</td>
-                      <td>{{ row.MRP }}</td>
-                      <td>{{ row.BRANDNAME }}</td>
-                      <td>{{ row.SECTION }}</td>
-                      <td>{{ row.SEASON }}</td>
-                      <td>{{ row.COLOURS }}</td>
-                      <td>
-                        <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
-                          <i class="bi bi-trash"></i> Delete
-                        </button>
-                      </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                      <td colspan="13" class="text-center text-muted">No records found</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-
-                <!-- Bulk Action -->
-                <!--<div class="d-flex justify-content-between align-items-center mt-3">-->
-                <!--  <p class="text-muted small mb-0">Select multiple rows to delete together.</p>-->
-                <!--  <button type="submit" name="bulk_delete" value="1" class="btn btn-outline-danger">-->
-                <!--    <i class="bi bi-trash-fill"></i> Delete Selected-->
-                <!--  </button>-->
-                <!--</div>-->
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("overlay");
-      const toggle = document.getElementById("menu-toggle");
-
-      toggle.addEventListener("click", () => {
-        sidebar.classList.toggle("active");
-        overlay.classList.toggle("active");
-      });
-
-      overlay.addEventListener("click", () => {
-        sidebar.classList.remove("active");
-        overlay.classList.remove("active");
-      });
-
-      <!-- ✅ Script for Select All -->
-
-      document.getElementById("selectAll").addEventListener("click", function () {
-        let checkboxes = document.querySelectorAll('input[name="selected_items"]');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-      });
-
-      document.getElementById("selectAll").addEventListener("click", function () {
-        let checkboxes = document.querySelectorAll('input[name="selected_itemsE"]');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-      });
-
-      document.getElementById("selectAll").addEventListener("click", function () {
-        let checkboxes = document.querySelectorAll('input[name="selected_itemsN"]');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-      });
-
-    </script>
+      </script>
 
 </body>
 
