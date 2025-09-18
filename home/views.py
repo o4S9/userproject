@@ -653,40 +653,52 @@ def upload_scanning(request):
             )
     if request.method == 'GET':
         status = request.GET.get('status')
-        delete = request.GET.get('selected_items')
+        # delete = request.GET.get('selected_items')
 
-        print('Status :',status)
-        print('delete :',delete)
+        # print('Status :',status)
+        # print('delete :',delete)
 
         if status == 'Scanning':
-            print('Scac :',delete)
+            # print('Scac :',status)
             return render(request,'importScanningFIle.html',{'display':result})
         elif status == 'Excess':
-            print('Exc :',delete)
+            # print('Exc :',status)
             return render(request,'importScanningFIle.html',{'display1':result2})
         elif status == 'Nill':
-            print('Nil :',delete)
-            return render(request,'importScanningFIle.html',{'display':result1})
+            # print('Nil :',status)
+            return render(request,'importScanningFIle.html',{'display2':result1})
         else:
             pass
-    # if request.method == "GET":
-    #     Edelete = request.GET.get('selected_itemsE')
-    #     Ndelete = request.GET.get('selected_itemsN')
-    #     if Edelete:
-    #         # print(Edelete)
-    #         product = ExcessRecordScanning.objects.get(id=Edelete)  # find row with id=1
-    #         product.delete()
-    #         msg1 = "Record delete!"
-    #         messages.success(request, msg1)
-    #         return render(request,'importScanningFIle.html',{"display":result2})
-    #     elif Ndelete:
-    #         # print(Ndelete)
-    #         product = ExcessScanning.objects.get(id=Ndelete)  # find row with id=1
-    #         product.delete()
-    #         msg1 = "Record delete!"
-    #         messages.success(request, msg1)
-    #         return render(request,'importScanningFIle.html',{"display":result2})
-    return render(request,'importScanningFIle.html')
+    if request.method == "GET":
+        Sdelete = request.GET.get('selected_items')
+        Edelete = request.GET.get('selected_itemsE')
+        Ndelete = request.GET.get('selected_itemsN')
+        
+        if Sdelete:
+            product = loctionRecords.objects.get(id=Sdelete)  # find row with id=1
+            product.delete()
+            msg1 = "Record delete!"
+            messages.success(request, msg1)
+            return render(request,'importScanningFIle.html',{"display":result})
+        elif Edelete:
+            # print(Edelete)
+            product = ExcessRecordScanning.objects.get(id=Edelete)  # find row with id=1
+            product.delete()
+            msg1 = "Record delete!"
+            messages.success(request, msg1)
+            return render(request,'importScanningFIle.html',{"display1":result2})
+        elif Ndelete:
+            # print(Ndelete)
+            product = ExcessScanning.objects.get(id=Ndelete)  # find row with id=1
+            product.delete()
+            msg1 = "Record delete!"
+            messages.success(request, msg1)
+            return render(request,'importScanningFIle.html',{"display2":result2})
+    return render(request,'importScanningFIle.html',{
+        'display':result,
+        'display1':result2,
+        'display2':result1
+        })
     # scanRec = loctionRecords.objects.all()
     # excessRec = ExcessScanning.objects.all()
     # return render(request,'importScanningFIle.html',{'display':scanRec,'edisplay':excessRec})
