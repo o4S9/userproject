@@ -295,11 +295,12 @@ def dataEntry(request):
         # except loctionRecords.DoesNotExist:
         #
         else:
-            # print("Loc & Addl: ",loc,addl)
+            print("Loc & Addl: ",loc,addl)
             # print("Barecode Not Match!")
-            EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
-            EBSc.save()
-            messages.error(request, "❌ This is an Invalid Barcode")            # mr = MasterData.objects.filter(ITEMCODE = dlr).values()
+            if loc and addl:
+                EBSc = ExcessScanning(loc_rec = loc,add_item_list = addl)
+                EBSc.save()
+                messages.error(request, "❌ This is an Invalid Barcode")            # mr = MasterData.objects.filter(ITEMCODE = dlr).values()
             # print("Scanning REc :",mr)
             master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
             result =loctionRecords.objects.filter(loc_rec=loc).annotate(
