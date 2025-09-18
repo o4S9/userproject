@@ -176,7 +176,7 @@
                   </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100" onclick="ls()">Apply</button>
+                <button type="submit" class="btn btn-primary w-100" onclick="st() ">Apply</button>
               </form>
             </div>
           </div>
@@ -185,7 +185,7 @@
 
 <br>
 
-     <div class="container-fluid mt-4">
+     <div class="container-fluid mt-4" id="Scanning" style="display: none;">
 
   <!-- Page Title -->
   <h2 class="mb-4 text-center text-primary fw-bold">
@@ -250,11 +250,11 @@
               </tr>
               {% endfor %}
             </tbody>
-          </table>
-<div class="container-fluid mt-4">
+          </table><br>
+<div class="container-fluid mt-4" id="Excess" style="display: none;">
   <!-- Page Title -->
   <h2 class="mb-4 text-center text-primary fw-bold">
-    📊 Scanning Records
+    📊 Excess Records
   </h2>
 
   <!-- Card Wrapper -->
@@ -289,7 +289,74 @@
               {% for row in display1 %}
               <tr>
                 <td>
-                  <input type="checkbox" name="selected_items" value="{{ row.id }}" class="form-check-input">
+                  <input type="checkbox" name="selected_itemsE" value="{{ row.id }}" class="form-check-input">
+                </td>
+                <td>{{ row.id }}</td>
+                <td>{{ row.loc_rec }}</td>
+                <td>{{ row.add_item_list }}</td>
+                <td>{{ row.ITEMCODE }}</td>
+                <td>{{ row.ITEMNAME }}</td>
+                <td>{{ row.SIZE }}</td>
+                <td>{{ row.MRP }}</td>
+                <td>{{ row.BRANDNAME }}</td>
+                <td>{{ row.SECTION }}</td>
+                <td>{{ row.SEASON }}</td>
+                <td>{{ row.COLOURS }}</td>
+                <td>
+                  <button type="submit" name="delete_id" value="{{ row.id }}"
+                          class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="13" class="text-center text-muted">No records found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+<br>
+
+<div class="container-fluid mt-4" id="Nill" style="display: none;">
+  <!-- Page Title -->
+  <h2 class="mb-4 text-center text-primary fw-bold">
+    📊 Nill Records
+  </h2>
+
+  <!-- Card Wrapper -->
+  <div class="card shadow-lg border-0 rounded-3">
+    <div class="card-body">
+
+      <!-- Scrollable Table -->
+      <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <form method="post" action="/dataEnter">
+          {% csrf_token %}
+          <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+            <thead class="table-dark sticky-top">
+              <tr>
+                <th scope="col">
+                  <input type="checkbox" id="selectAll" class="form-check-input">
+                </th>
+                <th scope="col">#</th>
+                <th scope="col">Location</th>
+                <th scope="col">ADDL</th>
+                <th scope="col">Item Code</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Size</th>
+                <th scope="col">MRP</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Section</th>
+                <th scope="col">Season</th>
+                <th scope="col">Colours</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in display1 %}
+              <tr>
+                <td>
+                  <input type="checkbox" name="selected_itemsN" value="{{ row.id }}" class="form-check-input">
                 </td>
                 <td>{{ row.id }}</td>
                 <td>{{ row.loc_rec }}</td>
@@ -354,6 +421,27 @@
           checkboxes.forEach(cb => cb.checked = this.checked);
         });
 
+Status = document.getElementById('status').value();
+// Get the selected value
+let selectedStatus = document.getElementById("status").value;
+// Get all divs
+let SCR = document.getElementById("Scanning");
+let ER = document.getElementById("Excess");
+let NR = document.getElementById("Nill");
+// console.log("Status :",Status)
+
+  function st() {  
+    // Show based on selection
+    if (selectedStatus === 'Scanning') {
+      SCR.style.display = "block";
+      ER.style.display = "none";
+      NR.style.display = "none";
+    } else if (selectedStatus === 'Excess') {
+      ER.style.display = "block";
+    } else if (selectedStatus === 'Nill') {
+      NR.style.display = "block";
+    }
+  }
       </script>
 
 </body>
