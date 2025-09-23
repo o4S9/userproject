@@ -327,7 +327,14 @@ def dataEntry(request):
     
 
 
-
+    if request.method == "GET":
+        locationNo = request.GET.get("locationNo")
+        if locationNo:
+            delete = loctionRecords.objects.filter(loc_rec=locationNo)
+            delete.delete() 
+            msg1 = "❌ Records Deleted!"
+            messages.success(request, msg1)
+        # print("Delete :",locationNo)
     # dispaly = loctionRecords.objects.filter(loc_rec = loc).values()
     # print(dispaly)
     master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
