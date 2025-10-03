@@ -313,28 +313,30 @@ def dataEntry(request):
 
     if request.method == "GET":
         locationNo = request.GET.get("locationNo")
-        Addl = request.GET.get("ITEMNAME")
+        # lcno = request.GET.get("location")
+        Addl = request.GET.get("addlsearch")
         locn = loctionRecords.objects.filter(loc_rec = locationNo).values()
-        addl = StockData.objects.filter(EANCODE = Addl).values()
-        # print("itename0 :",itename,locn)
+        landAddl = loctionRecords.objects.filter(add_item_list = Addl).values()
+        # addl = StockData.objects.filter(EANCODE = Addl).values()
+        print("Addl :",Addl)
         # return redirect('/dataEnter')
 
-        if addl:            
-            master_qs = StockData.objects.filter(EANCODE=addl)
-            result =loctionRecords.objects.annotate(
-                    ITEMCODE=Subquery(master_qs.values('EANCODE')[:1]),
-                    ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
-                    SIZE=Subquery(master_qs.values('SIZE')[:1]),
-                    MRP=Subquery(master_qs.values('MRP')[:1]),
-                    BRANDNAME=Subquery(master_qs.values('BRAND')[:1]),
-                    SECTION=Subquery(master_qs.values('SECTION')[:1]),
-                    SEASON=Subquery(master_qs.values('SEASON')[:1]),
-                    COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
-                    ).values(
-                        'id', 'add_item_list', 'loc_rec','ITEMCODE',
-                        'ITEMNAME', 'SIZE', 'MRP', 'BRANDNAME',
-                        'SECTION', 'SEASON', 'COLOURS'
-                    )
+        if landAddl:            
+            master_qs = StockData.objects.filter(EANCODE=OuterRef('add_item_list'))
+            result =loctionRecords.objects.filter(add_item_list=Addl).annotate(
+                        ITEMCODE=Subquery(master_qs.values('EANCODE')[:1]),
+                        ITEMNAME=Subquery(master_qs.values('ITEMNAME')[:1]),
+                        SIZE=Subquery(master_qs.values('SIZE')[:1]),
+                        MRP=Subquery(master_qs.values('MRP')[:1]),
+                        BRANDNAME=Subquery(master_qs.values('BRAND')[:1]),
+                        SECTION=Subquery(master_qs.values('SECTION')[:1]),
+                        SEASON=Subquery(master_qs.values('SEASON')[:1]),
+                        COLOURS=Subquery(master_qs.values('COLOURS')[:1]),
+                        ).values(
+                            'id', 'add_item_list', 'loc_rec','ITEMCODE',
+                            'ITEMNAME', 'SIZE', 'MRP', 'BRANDNAME',
+                            'SECTION', 'SEASON', 'COLOURS'
+                        )
             # return redirect('/dataEnter')
             # print(result)
             return render(request,'Data_Entry.html',{"result":result})

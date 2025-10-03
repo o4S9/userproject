@@ -304,18 +304,18 @@
           <!-- Update Form -->
           <div class="tab-pane fade show active" id="update-form" role="tabpanel">
             <div class="card shadow p-3">
-              <h5 class="card-title">Update Barcode</h5>
+              <h5 class="card-title">🔍 Search Records </h5>
               <form action="/dataEnter" method="get">
                 {% csrf_token %}
-                 <div class="mb-3">
+                 <!-- <div class="mb-3">
                   <label for="location" class="form-label">Enter Location no:</label>
                   <input type="text" name="location" id="location" class="form-control" required>
-                </div>
+                </div> -->
                 <div class="mb-3">
-                  <label for="addlUpdate" class="form-label">Enter Item Name:</label>
-                  <input type="text" name="ITEMNAME" id="addlUpdate" class="form-control" required>
+                  <label for="addlUpdate" class="form-label">Enter Addl:</label>
+                  <input type="text" name="addlsearch" id="addlsearch" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Search</button>
+                <button type="submit" class="btn btn-success w-100">🔍 Search</button>
               </form>
             </div>
           </div>
@@ -333,10 +333,6 @@
               </form>
             </div>
           </div>
-
-
-
-
         </div>
         <br>
         <!-- Filter + Update Barcode in Same Row with Flex -->
@@ -346,7 +342,7 @@
             <!-- Filter Form -->
             <!-- <div class="flex-fill" style="min-width: 300px; max-width: 48%;">
                             <div class="card shadow p-3 h-100">
-                                <h5 class="card-title">🔍 Filter Records</h5>
+                                <h5 class="card-title"> Filter Records</h5>
                                 <form method="get" action="/filterData">
                                     <div class="mb-3">
                                         <label for="filterLocation" class="form-label">Location No</label>
