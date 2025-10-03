@@ -32,13 +32,16 @@ def index(request):
    if request.method == "POST":
        addl = request.POST.get("addl")
        itename = request.POST.get("itename")
+       caps_addl = itename.upper()
+
+       
    if addl:
-       master = MasterData.objects.filter(ADDL = addl).values()
+       master = MasterData.objects.filter(ADDL = addl.upper()).values()
     #    print(master)
        return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,"Ecount":ExcessCount,"nill":nill})
    elif itename:
-       print(itename)
-       master = MasterData.objects.filter(ITEMNAME = itename).values()
+    #    print(itename)
+       master = MasterData.objects.filter(ITEMNAME = caps_addl).values()
        return render(request,"index.html",{"masterProducts":master,"Count":MasterCount,"Scount":StockCount,"Sccount":ScanningCount,"Ecount":ExcessCount,"nill":nill})
 
 #    Short List Item
