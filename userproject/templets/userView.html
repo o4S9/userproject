@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SmartKart - Step into Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            color: #1e293b;
+            scroll-behavior: smooth;
+        }
+
+        .soft-shadow {
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        }
+
+        /* Text Mask Reveal for hero */
+        .text-mask {
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .text-mask::after {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: slideMask 3s forwards;
+            animation-delay: 0.3s;
+            pointer-events: none;
+        }
+
+        @keyframes slideMask {
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Accordion animation */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.35s ease;
+            opacity: 0;
+        }
+
+        .accordion-active .accordion-content {
+            opacity: 1;
+            max-height: 500px;
+            transition: max-height 0.5s ease, opacity 0.5s ease;
+        }
+
+        /* Product hover zoom */
+        .product-image {
+            transition: transform 0.4s ease;
+            will-change: transform;
+            cursor: pointer;
+            border-radius: 0.5rem;
+        }
+
+        .product-image:hover {
+            transform: scale(1.08);
+        }
+
+        /* Overlay on product hover */
+        .product-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(38, 115, 255, 0.65);
+            opacity: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .product-card:hover .product-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Lightbox Modal */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .lightbox.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 40px rgb(38 115 255 / 0.5);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between p-4 md:p-6">
+            <a href="#" class="text-2xl font-extrabold text-blue-600 select-none text-mask"
+                aria-label="SmartKart logo">SmartKart</a>
+            <form action="#" class="flex-1 max-w-lg relative">
+                <input type="search" placeholder="Search for products, brands and more..." aria-label="Search products"
+                    class="w-full border border-gray-300 rounded-full py-2 px-4 focus:outline-none focus:border-blue-500 transition" />
+                <button class="absolute right-2 top-2.5 text-gray-400 hover:text-blue-600" aria-label="Search button"
+                    type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="#2563eb">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
+            <nav class="flex space-x-5 items-center text-gray-600 text-sm md:text-base">
+                <a href="#" title="User account" aria-label="User account">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:text-blue-600 transition" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A9.001 9.001 0 1118.879 6.196a9.001 9.001 0 01-13.757 11.608z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </a>
+                <a href="#" title="Wishlist" aria-label="Wishlist">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:text-blue-600 transition" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 10-6.364-6.364L12 7.636 10.682 6.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </a>
+                <a href="#" class="relative" title="Shopping cart" aria-label="Shopping cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:text-blue-600 transition" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 7.5M7 13h10M16 21a1 1 0 11-2 0 1 1 0 012 0zm-8 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                    </svg>
+                    <span
+                        class="absolute -top-2 -right-2 text-xs bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center font-semibold select-none">3</span>
+                </a>
+            </nav>
+        </div>
+        <!-- Navigation categories and brands -->
+        <nav class="bg-white border-t border-gray-100 shadow-inner">
+            <div
+                class="max-w-7xl mx-auto flex justify-between items-center py-3 px-4 text-gray-700 text-sm md:text-base">
+                <ul class="flex space-x-8 font-semibold">
+                    <li class="group relative">
+                        <button class="flex items-center hover:text-blue-600 transition" aria-haspopup="true"
+                            aria-expanded="false">
+                            Footwear
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 mt-[2px]" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <!-- Dropdown -->
+                        <ul
+                            class="absolute left-0 top-full mt-2 bg-white border rounded-md shadow-sm p-3 w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Running</a></li>
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Training</a></li>
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Casual</a></li>
+                        </ul>
+                    </li>
+                    <li class="group relative">
+                        <button class="flex items-center hover:text-blue-600 transition" aria-haspopup="true"
+                            aria-expanded="false">
+                            Accessories
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 mt-[2px]" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul
+                            class="absolute left-0 top-full mt-2 bg-white border rounded-md shadow-sm p-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Bags & Backpacks</a></li>
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Caps & Hats</a></li>
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Socks</a></li>
+                        </ul>
+                    </li>
+                    <li class="group relative">
+                        <button class="flex items-center hover:text-blue-600 transition" aria-haspopup="true"
+                            aria-expanded="false">
+                            Apparels
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 mt-[2px]" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul
+                            class="absolute left-0 top-full mt-2 bg-white border rounded-md shadow-sm p-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">T-Shirts</a></li>
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Hoodies</a></li>
+                            <li><a href="#" class="block px-2 py-1 rounded hover:bg-blue-50">Jackets</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="flex items-center space-x-4 text-sm text-gray-500 select-none">
+                    <p>Featured Brands:</p>
+                    <ul class="flex space-x-3">
+                        <li class="font-semibold cursor-default hover:text-blue-600" aria-label="Featured brand Adidas">
+                            Adidas</li>
+                        <li class="font-semibold cursor-default hover:text-blue-600" aria-label="Featured brand Puma">
+                            Puma</li>
+                        <li class="font-semibold cursor-default hover:text-blue-600"
+                            aria-label="Featured brand New Balance">New Balance</li>
+                        <li class="font-semibold cursor-default hover:text-blue-600"
+                            aria-label="Featured brand Skechers">Skechers</li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-white max-w-7xl mx-auto px-4 md:px-6 my-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="space-y-6">
+                <h2 class="text-3xl md:text-4xl font-extrabold leading-tight max-w-xl text-gray-900" id="hero-title">
+                    Discover Your Perfect <span
+                        class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">Style</span>
+                </h2>
+                <p class="text-gray-700 max-w-md" id="hero-desc">
+                    Shop the latest collection of premium footwear, accessories, and apparels from top brands worldwide.
+                </p>
+                <a href="#products-section"
+                    class="inline-block bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 transition"
+                    role="button">
+                    Shop Now
+                </a>
+            </div>
+            <div class="relative">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/63575cde-632b-4cc2-8fb4-0b7229f6fb54.png"
+                    alt="Modern display of multi-brand sports shoes on clear glass shelves, clean white studio background with soft natural lighting"
+                    class="rounded-xl shadow-lg" />
+                <!-- Simple parallax on scroll for this hero image container added by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Main content -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 flex-grow">
+
+        <!-- Filters & Products Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-16"
+            aria-label="Product filtering and product listing">
+
+            <!-- Sidebar filters -->
+            <aside aria-label="Filters" class="space-y-8 sticky top-24 self-start">
+                <form id="filters-form" aria-describedby="filters-desc" class="bg-white p-6 rounded-lg soft-shadow">
+                    <h3 class="text-lg font-semibold mb-4">Filters</h3>
+                    <p id="filters-desc" class="sr-only">Set filters for brand, price range, size, and color to
+                        customize product results.</p>
+
+                    <!-- Brand filter -->
+                    <fieldset>
+                        <legend class="text-base font-semibold mb-3">Brand</legend>
+                        <div class="space-y-2 text-gray-700">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="brand" value="Adidas"
+                                    class="form-checkbox text-blue-600" />
+                                <span class="ml-2 select-none">Adidas</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="brand" value="Puma" class="form-checkbox text-blue-600" />
+                                <span class="ml-2 select-none">Puma</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="brand" value="New Balance"
+                                    class="form-checkbox text-blue-600" />
+                                <span class="ml-2 select-none">New Balance</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="brand" value="Skechers"
+                                    class="form-checkbox text-blue-600" />
+                                <span class="ml-2 select-none">Skechers</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- Price Range Filter -->
+                    <fieldset class="mt-6">
+                        <legend class="text-base font-semibold mb-3">Price Range ($)</legend>
+                        <div class="flex space-x-3">
+                            <input type="number" name="price-min" min="0" placeholder="Min" aria-label="Minimum price"
+                                class="w-1/2 rounded-md border border-gray-300 py-1 px-2 focus:outline-none focus:ring-1 focus:ring-blue-600" />
+                            <input type="number" name="price-max" min="0" placeholder="Max" aria-label="Maximum price"
+                                class="w-1/2 rounded-md border border-gray-300 py-1 px-2 focus:outline-none focus:ring-1 focus:ring-blue-600" />
+                        </div>
+                    </fieldset>
+
+                    <!-- Size Filter -->
+                    <fieldset class="mt-6">
+                        <legend class="text-base font-semibold mb-3">Size</legend>
+                        <div class="flex flex-wrap gap-2 text-gray-700">
+                            <label class="inline-flex cursor-pointer">
+                                <input type="checkbox" name="size" value="6" class="form-checkbox text-blue-600" />
+                                <span class="ml-1 select-none">6</span>
+                            </label>
+                            <label class="inline-flex cursor-pointer">
+                                <input type="checkbox" name="size" value="7" class="form-checkbox text-blue-600" />
+                                <span class="ml-1 select-none">7</span>
+                            </label>
+                            <label class="inline-flex cursor-pointer">
+                                <input type="checkbox" name="size" value="8" class="form-checkbox text-blue-600" />
+                                <span class="ml-1 select-none">8</span>
+                            </label>
+                            <label class="inline-flex cursor-pointer">
+                                <input type="checkbox" name="size" value="9" class="form-checkbox text-blue-600" />
+                                <span class="ml-1 select-none">9</span>
+                            </label>
+                            <label class="inline-flex cursor-pointer">
+                                <input type="checkbox" name="size" value="10" class="form-checkbox text-blue-600" />
+                                <span class="ml-1 select-none">10</span>
+                            </label>
+                            <label class="inline-flex cursor-pointer">
+                                <input type="checkbox" name="size" value="11" class="form-checkbox text-blue-600" />
+                                <span class="ml-1 select-none">11</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- Color Filter -->
+                    <fieldset class="mt-6">
+                        <legend class="text-base font-semibold mb-3">Color</legend>
+                        <div class="flex space-x-4">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="color" value="black" class="hidden" />
+                                <span class="w-6 h-6 block rounded-full bg-black border border-gray-300"></span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="color" value="white" class="hidden" />
+                                <span class="w-6 h-6 block rounded-full bg-white border border-gray-300"></span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="color" value="red" class="hidden" />
+                                <span class="w-6 h-6 block rounded-full bg-red-600 border border-gray-300"></span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="color" value="blue" class="hidden" />
+                                <span class="w-6 h-6 block rounded-full bg-blue-600 border border-gray-300"></span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="color" value="green" class="hidden" />
+                                <span class="w-6 h-6 block rounded-full bg-green-600 border border-gray-300"></span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <button type="submit"
+                        class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500">
+                        Apply Filters
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Products Section -->
+            <section class="md:col-span-3" id="products-section" aria-label="Featured products">
+                <div class="flex flex-wrap justify-between items-center mb-4">
+                    <p class="text-gray-600 text-sm md:text-base" id="products-info">Showing 1-24 of 156 results <span
+                            class="ml-2 inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-0.5 text-xs font-semibold"
+                            aria-label="Current Brand Filter">Brand: Adidas</span> <span
+                            class="ml-2 inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-0.5 text-xs font-semibold">Size:
+                            9</span></p>
+                    <div>
+                        <label for="sort-select" class="sr-only">Sort products by:</label>
+                        <select id="sort-select" name="sort" aria-label="Sort by"
+                            class="border border-gray-300 py-1.5 px-3 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600">
+                            <option value="popularity" selected>Popularity</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="newest">Newest</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                    aria-live="polite">
+                    <!-- Product cards: populated by JS below -->
+                </div>
+
+                <div class="flex justify-center mt-8">
+                    <button id="load-more-btn"
+                        class="px-6 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                        aria-label="Load more products">
+                        Load More Products
+                    </button>
+                </div>
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-300 pt-12 pb-6 mt-auto select-none"
+        aria-label="Footer information and links">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-5 gap-8">
+
+            <div class="space-y-4 md:col-span-2">
+                <h1 class="text-2xl font-extrabold text-blue-500 cursor-default select-text">SmartKart</h1>
+                <p class="text-slate-400 max-w-sm">
+                    Your ultimate destination for premium footwear, accessories, and apparels from top global brands.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" aria-label="Facebook" class="hover:text-blue-500 transition">
+                        <svg fill="currentColor" class="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M22 12C22 6.48 17.52 2 12 2S2 6.48 2 12c0 5 3.66 9.13 8.44 9.88v-6.99h-2.54v-2.89h2.54V9.42c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.22.2 2.22.2v2.44h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 2.89h-2.3v6.99C18.34 21.13 22 17 22 12z" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Twitter" class="hover:text-blue-400 transition">
+                        <svg fill="currentColor" class="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M23 3a10.9 10.9 0 01-3.14.86 4.48 4.48 0 001.98-2.45 9.15 9.15 0 01-2.89 1.13 4.53 4.53 0 00-7.73 4.14 12.85 12.85 0 01-9.33-4.73 4.52 4.52 0 001.4 6.09A4.48 4.48 0 012 9.27v.05a4.52 4.52 0 003.64 4.42 4.52 4.52 0 01-2.06.08 4.53 4.53 0 004.23 3.14 9.02 9.02 0 01-5.6 1.94A9.14 9.14 0 012 19a12.75 12.75 0 006.91 2" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Instagram" class="hover:text-pink-500 transition">
+                        <svg fill="currentColor" class="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M7.75 2H16.25C20.13 2 22 4 22 7.8v8.5c0 3.8-1.87 5.8-5.75 5.8H7.75C3.87 22 2 20 2 16.3v-8.5C2 4 3.87 2 7.75 2zM18 17a3 3 0 11-6 0 3 3 0 016 0zm-3-6.5a3.5 3.5 0 11.001-6.999A3.5 3.5 0 0115 10.5z" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="YouTube" class="hover:text-red-600 transition">
+                        <svg fill="currentColor" class="w-6 h-6" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M10 15l5.19-3L10 9v6zM21.8 7.84a3.21 3.21 0 00-2.27-2.26C17.8 5 12 5 12 5s-5.8 0-7.54.58a3.21 3.21 0 00-2.27 2.26A33.82 33.82 0 002 12a33.82 33.82 0 00.19 4.16 3.21 3.21 0 002.27 2.26c1.73.57 7.54.57 7.54.57s5.8 0 7.54-.57a3.21 3.21 0 002.27-2.26A33.82 33.82 0 0022 12a33.82 33.82 0 00-.2-4.16z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <nav class="space-y-8">
+                <h4 class="text-slate-400 font-semibold uppercase tracking-wide">Shop</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-white transition">Footwear</a></li>
+                    <li><a href="#" class="hover:text-white transition">Accessories</a></li>
+                    <li><a href="#" class="hover:text-white transition">Apparels</a></li>
+                    <li><a href="#" class="hover:text-white transition">New Arrivals</a></li>
+                    <li><a href="#" class="hover:text-white transition">Sale</a></li>
+                </ul>
+            </nav>
+
+            <nav class="space-y-8">
+                <h4 class="text-slate-400 font-semibold uppercase tracking-wide">Customer Service</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+                    <li><a href="#" class="hover:text-white transition">Size Guide</a></li>
+                    <li><a href="#" class="hover:text-white transition">Shipping Info</a></li>
+                    <li><a href="#" class="hover:text-white transition">Returns</a></li>
+                    <li><a href="#" class="hover:text-white transition">FAQ</a></li>
+                </ul>
+            </nav>
+
+            <nav class="space-y-8">
+                <h4 class="text-slate-400 font-semibold uppercase tracking-wide">Company</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition">Careers</a></li>
+                    <li><a href="#" class="hover:text-white transition">Press</a></li>
+                    <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                </ul>
+            </nav>
+
+            <section aria-label="Newsletter subscription" class="space-y-6 max-w-xs">
+                <h4 class="text-slate-400 font-semibold uppercase tracking-wide">Newsletter</h4>
+                <p class="text-slate-300 text-sm">Subscribe to get updates on new products and exclusive offers.</p>
+                <form id="newsletter-form" class="flex">
+                    <input type="email" placeholder="Enter your email" aria-label="Newsletter email input" required
+                        class="rounded-l-md pl-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-600 text-slate-900" />
+                    <button type="submit" aria-label="Subscribe to newsletter"
+                        class="bg-blue-600 hover:bg-blue-700 rounded-r-md px-4 py-2 text-white font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500">
+                        >
+                    </button>
+                </form>
+                <div class="flex space-x-3 items-center mt-4" aria-label="Payment methods accepted">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d0881aea-8f2f-49cf-b911-bf5a72869430.png"
+                        alt="Visa card logo" class="object-contain" loading="lazy" />
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/9c69574e-0f5a-452d-8cc0-59cb2b888e70.png"
+                        alt="Mastercard logo" class="object-contain" loading="lazy" />
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d333b9fe-735c-4396-b638-a6da48e22386.png"
+                        alt="PayPal logo" class="object-contain" loading="lazy" />
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bb752e3e-a833-4635-a0c7-7f6f5ee57a0e.png"
+                        alt="Apple Pay logo" class="object-contain" loading="lazy" />
+                </div>
+            </section>
+
+        </div>
+
+        <div class="border-t border-slate-700 text-slate-400 text-xs text-center pt-6 mt-6">
+            © 2025 SmartKart. All rights reserved.
+            <br />
+            <a href="#" class="underline hover:text-white">Privacy Policy</a> ·
+            <a href="#" class="underline hover:text-white">Terms of Service</a> ·
+            <a href="#" class="underline hover:text-white">Cookie Policy</a>
+        </div>
+    </footer>
+
+    <!-- Lightbox modal for gallery -->
+    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+        <img src="" alt="" />
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // GSAP Animations
+
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero text fade-in + scale
+            gsap.from("#hero-title", { duration: 1.2, opacity: 0, y: 30, scale: 0.95, ease: "power2.out" });
+            gsap.from("#hero-desc", { duration: 1.3, opacity: 0, y: 20, delay: 0.3, ease: "power2.out" });
+            gsap.from("a[role='button']", { duration: 1.4, opacity: 0, y: 20, delay: 0.6, ease: "power2.out" });
+
+            // Parallax for hero image
+            const heroImg = document.querySelector('section.relative img');
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY || window.pageYOffset;
+                if (heroImg) {
+                    heroImg.style.transform = `translateY(${scrollTop * 0.15}px)`;
+                }
+            });
+
+            // Scroll fade-in + upward for sections
+            gsap.utils.toArray('section, main > section > *').forEach(elem => {
+                ScrollTrigger.create({
+                    trigger: elem,
+                    start: "top 85%",
+                    onEnter: () => gsap.to(elem, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }),
+                    onLeaveBack: () => gsap.to(elem, { opacity: 0, y: 30, duration: 0.8, ease: "power2.out" }),
+                    markers: false
+                });
+                // Initial state
+                gsap.set(elem, { opacity: 0, y: 30 });
+            });
+
+            // Accordion behavior for services cards in future (not present now, placeholder for scalability)
+            // Image hover zooms handled by CSS
+
+            // Products data array and rendering
+            const productsData = [
+                {
+                    brand: "Adidas",
+                    name: "Ultraboost 22 Running Shoes",
+                    price: 180,
+                    priceOld: 220,
+                    discount: 18,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2d39aa31-535b-47c1-9a98-692b96fb1481.png",
+                    color: "white",
+                    sizes: [7, 8, 9, 10],
+                    alt: "White Adidas Ultraboost 22 running shoe with modern sole design"
+                },
+                {
+                    brand: "Puma",
+                    name: "RS-X Reinvention Sneakers",
+                    price: 110,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c08921fe-018b-471a-944e-2a70356e67ae.png",
+                    color: "red",
+                    sizes: [6, 7, 8, 9, 10, 11],
+                    alt: "Red Puma RS-X reinvention sneakers with vibrant accents"
+                },
+                {
+                    brand: "New Balance",
+                    name: "990v5 Made in USA",
+                    price: 185,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/0868c1e8-a707-4665-be68-9c43d1116f22.png",
+                    color: "gray",
+                    sizes: [7, 8, 9, 10, 11],
+                    alt: "Gray New Balance 990 v5 shoes made in USA with classic design"
+                },
+                {
+                    brand: "Skechers",
+                    name: "Go Walk Max Walking Shoes",
+                    price: 65,
+                    priceOld: 85,
+                    discount: 24,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/fe618df2-95f1-4e96-9b7c-64ece62f8409.png",
+                    color: "black",
+                    sizes: [7, 8, 9, 10],
+                    alt: "Black Skechers Go Walk Max walking shoes for comfort and support"
+                },
+                {
+                    brand: "Adidas",
+                    name: "Stan Smith Classic Sneakers",
+                    price: 80,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/70c2d652-a035-413f-ad46-30fb72e59e91.png",
+                    color: "white",
+                    sizes: [6, 7, 8, 9, 10, 11],
+                    alt: "Classic white Adidas Stan Smith sneakers with signature green accents"
+                },
+                {
+                    brand: "Puma",
+                    name: "Suede Classic XXI Sneakers",
+                    price: 70,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5ca6dcfe-6778-49ca-8094-4693dcf2f3d7.png",
+                    color: "blue",
+                    sizes: [6, 7, 8, 9, 10],
+                    alt: "Blue Puma Suede Classic XXI sneakers with suede upper"
+                },
+                {
+                    brand: "New Balance",
+                    name: "Fresh Foam X 1080v12",
+                    price: 140,
+                    priceOld: 160,
+                    discount: 13,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e248d962-9a99-4d7c-a017-5f35794f26ff.png",
+                    color: "blue",
+                    sizes: [7, 8, 9, 10, 11],
+                    alt: "Blue New Balance Fresh Foam X 1080 v12 running shoes"
+                },
+                {
+                    brand: "Skechers",
+                    name: "D'Lites Fresh Start",
+                    price: 75,
+                    imgSrc: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/93cca584-ed7b-4ea1-80b7-55699ddaf388.png'Lites+Fresh+Start",
+                    color: "pink",
+                    sizes: [6, 7, 8, 9, 10],
+                    alt: "Pink Skechers D'Lites Fresh Start casual sneakers"
+                }
+            ];
+
+            let productsLoaded = 0;
+            const productsPerLoad = 8;
+
+            const productsGrid = document.getElementById('products-grid');
+            const loadMoreBtn = document.getElementById('load-more-btn');
+
+            // Function to create product card HTML element
+            function createProductCard(product) {
+                const card = document.createElement('article');
+                card.className = 'bg-white rounded-xl shadow-md p-4 relative transition hover:shadow-lg focus-within:shadow-lg';
+                card.setAttribute('tabindex', '0');
+
+                card.innerHTML = `
+          <div class="relative overflow-hidden rounded-xl mb-3" style="aspect-ratio: 4 / 3;">
+            <img src="${product.imgSrc}" alt="${product.alt}" class="product-image w-full h-full object-cover" loading="lazy" />
+            <div class="product-overlay" aria-hidden="true">
+              Shop Now
+            </div>
+          </div>
+          <header class="mb-1">
+            <p class="text-xs text-gray-500">${product.brand}</p>
+            <h3 class="font-semibold text-base leading-tight">${product.name}</h3>
+          </header>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-blue-600 text-lg">
+              $${product.price}
+            </span>
+            ${product.priceOld ?
+                        `<span class="line-through text-gray-400 text-sm">$${product.priceOld}</span>` : ''
+                    }
+            ${product.discount ?
+                        `<span class="ml-auto bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full select-none">${product.discount}% OFF</span>` : ''
+                    }
+          </div>
+          <button class="mt-4 w-full bg-blue-600 text-white rounded-md py-2 font-semibold hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus:outline-none transition" aria-label="Add ${product.name} to cart">
+            Add to Cart
+          </button>
+          <button class="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition" aria-label="Add to wishlist">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="w-5 h-5" viewBox="0 0 24 24">
+              <path d="M20.84 4.61c-1.07-1.07-2.8-1.07-3.87 0L12 9.59 7.03 4.62c-1.07-1.07-2.8-1.07-3.87 0-1.07 1.07-1.07 2.8 0 3.87l4.97 5-4.97 5c-1.07 1.07-1.07 2.8 0 3.87a2.732 2.732 0 003.87 0l4.97-5 4.97 5c1.07 1.07 2.8 1.07 3.87 0 1.07-1.07 1.07-2.8 0-3.87l-4.97-5 4.97-5a2.732 2.732 0 000-3.87z"></path>
+            </svg>
+          </button>
+        `;
+
+                // Clicking image or overlay will open lightbox
+                const img = card.querySelector('img');
+                const overlay = card.querySelector('.product-overlay');
+                [img, overlay].forEach(el => {
+                    el.style.cursor = 'zoom-in';
+                    el.addEventListener('click', () => {
+                        openLightbox(product.imgSrc, product.alt);
+                    });
+                });
+
+                return card;
+            }
+
+            // Render products on page
+            function loadProducts() {
+                const remaining = productsData.length - productsLoaded;
+                const count = Math.min(productsPerLoad, remaining);
+
+                for (let i = productsLoaded; i < productsLoaded + count; i++) {
+                    const card = createProductCard(productsData[i]);
+                    productsGrid.appendChild(card);
+
+                    // Animate cards on entrance
+                    gsap.from(card, {
+                        opacity: 0,
+                        y: 40,
+                        duration: 0.5,
+                        delay: (i - productsLoaded) * 0.1,
+                        ease: "power3.out"
+                    });
+                }
+                productsLoaded += count;
+
+                if (productsLoaded >= productsData.length) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.textContent = "No More Products";
+                    loadMoreBtn.classList.replace('hover:bg-blue-600', 'bg-gray-400 cursor-not-allowed');
+                }
+            }
+
+            loadMoreBtn.addEventListener('click', () => {
+                loadProducts();
+            });
+
+            // Load initial products
+            loadProducts();
+
+            // Lightbox functionality
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = lightbox.querySelector('img');
+
+            function openLightbox(src, alt) {
+                lightboxImg.src = src;
+                lightboxImg.alt = alt;
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                lightbox.focus();
+            }
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                lightboxImg.src = '';
+                lightboxImg.alt = '';
+                document.body.style.overflow = '';
+            }
+
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+            });
+
+            // Filter form (basic UI logic as placeholder)
+            const filtersForm = document.getElementById('filters-form');
+            filtersForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Here you can add filtering logic to filter productsData and rerender if needed.
+                alert('Filter logic is not implemented in this demo.');
+            });
+
+            // Newsletter form basic action
+            const newsletterForm = document.getElementById('newsletter-form');
+            newsletterForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Thank you for subscribing!');
+                newsletterForm.reset();
+            });
+
+        });
+    </script>
+</body>
+
+</html>

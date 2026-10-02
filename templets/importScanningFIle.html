@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Audit-Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      height: 100vh;
+      background-color: #1f2937;
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      width: 250px;
+      transition: all 0.3s;
+      z-index: 1050;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 20px;
+      font-size: 16px;
+    }
+
+    .sidebar a:hover {
+      background-color: #374151;
+      border-radius: 5px;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    /* Hide sidebar and shift content for small screens */
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -250px;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        top: 0;
+        left: 0;
+        z-index: 1040;
+      }
+
+      .overlay.active {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Toggle Button (hamburger) -->
+  <nav class="navbar bg-dark d-md-none">
+    <div class="container-fluid">
+      <button class="btn btn-outline-light" id="menu-toggle">☰</button>
+      <span class="navbar-brand mb-0 h1 text-white">Audit-Manager</span>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h4 class="text-start">Audit-Manager</h4>
+    <h5>Welcome {{request.user}}</h5>
+    <hr style="border-color: rgba(255, 255, 255, 0.2)">
+    <a href="/">🏠 Home</a>
+    <a href="/dataEnter">📷 Scanning-File</a>
+    <a href="/scan">📷 Scanning-Record</a>
+
+
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <h2 class="mb-4">Upload-Scanning Excel File</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="excel_file" class="form-label">Select-Scanning Excel File</label>
+          <input class="form-control" type="file" id="excel_file" name="file" accept=".xls,.xlsx,.csv" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Import</button>
+      </form>
+    </div><br>
+
+    {% if messages %}
+    <div class="container mt-2">
+      {% for message in messages %}
+      <div class="alert
+               {% if message.tags == 'success' %} alert-success
+               {% elif message.tags == 'error' %} alert-danger
+               {% else %} alert-info {% endif %}
+               alert-dismissible fade show" role="alert">
+
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <!-- Update Barcode Form -->
+    <!--<div class="flex-fill" style="min-width: 300px; max-width: 100%;">-->
+    <!--    <h5 class="card-title">Update Barcode</h5>-->
+    <!--    <div class="card shadow p-3 h-100">-->
+    <!--        <form action="/dataEnter" method="post">-->
+    <!--            {% csrf_token %}-->
+    <!--            <div class="d-flex flex-wrap gap-3" style="display: flex; flex-direction: row;">-->
+    <!--                <div class="mb-3">-->
+    <!--                <label for="cb" class="form-label">Enter a locationNo:</label>-->
+    <!--                <input type="text" name="cb" id="bc" class="form-control"-->
+    <!--                    placeholder="Location number ...">-->
+    <!--            </div>-->
+    <!--            <div class="mb-3">-->
+    <!--                <label for="cb" class="form-label">Enter a Addl:</label>-->
+    <!--                <input type="text" name="cb" id="bc" class="form-control"-->
+    <!--                    placeholder="Addl ...">-->
+    <!--            </div>-->
+    <!--            <div class="mb-3">-->
+    <!--                <label for="ub" class="form-label">Enter Update Addl:</label>-->
+    <!--                <input type="text" name="ub" id="ub" class="form-control"-->
+    <!--                    placeholder="Update Addl ...">-->
+    <!--            </div>-->
+    <!--            <div class="mb-3">-->
+    <!--            <button type="submit" class="btn btn-success w-100">Update</button>-->
+    <!--            </div>-->
+    <!--            </div>-->
+    <!--        </form>-->
+    <!--    </div>-->
+    <!--</div><br>-->
+    <!-- Django Messages -->
+
+
+   <div class="container">
+  <h2 class="mb-4 row justify-content-center">Scanning Excel File</h2>
+
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card shadow-sm p-3">
+          <h5 class="mb-3">Select Status</h5>
+
+          <form action="" method="get" onsubmit="st(event)">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="status" class="form-label">Choose Status:</label>
+              <select id="status" name="status" class="form-select">
+                <option value="Scanning">Scanning-Sheet</option>
+                <option value="Excess">Excess-Sheet</option>
+                <option value="Nill">Nill-Sheet</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" onclick="st(event)">Apply</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <!-- Scanning Table -->
+  <div class="container-fluid mt-4" id="Scanning" style="display: none;">
+    <h2 class="mb-4 text-center text-primary fw-bold">📊 Scanning Records</h2>
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-body">
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <form method="get" action="/scan/">
+            {% csrf_token %}
+            <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                  <th>#</th>
+                  <th>Location</th>
+                  <th>ADDL</th>
+                  <th>Item Code</th>
+                  <th>Item Name</th>
+                  <th>Size</th>
+                  <th>MRP</th>
+                  <th>Brand</th>
+                  <th>Section</th>
+                  <th>Season</th>
+                  <th>Colours</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in display %}
+                <tr>
+                  <td><input type="checkbox" name="selected_items" value="{{ row.id }}" class="form-check-input"></td>
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.loc_rec }}</td>
+                  <td>{{ row.add_item_list }}</td>
+                  <td>{{ row.ITEMCODE }}</td>
+                  <td>{{ row.ITEMNAME }}</td>
+                  <td>{{ row.SIZE }}</td>
+                  <td>{{ row.MRP }}</td>
+                  <td>{{ row.BRANDNAME }}</td>
+                  <td>{{ row.SECTION }}</td>
+                  <td>{{ row.SEASON }}</td>
+                  <td>{{ row.COLOURS }}</td>
+                  <td>
+                    <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="13" class="text-center text-muted">No records found</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Excess Table -->
+  <div class="container-fluid mt-4" id="Excess" style="display: none;">
+    <h2 class="mb-4 text-center text-primary fw-bold">📊 Excess Records</h2>
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-body">
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <form method="get" action="/scan/">
+            {% csrf_token %}
+            <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                  <th>#</th>
+                  <th>Location</th>
+                  <th>ADDL</th>
+                  <th>Item Code</th>
+                  <th>Item Name</th>
+                  <th>Size</th>
+                  <th>MRP</th>
+                  <th>Brand</th>
+                  <th>Section</th>
+                  <th>Season</th>
+                  <th>Colours</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in display1 %}
+                <tr>
+                  <td><input type="checkbox" name="selected_itemsE" value="{{ row.id }}" class="form-check-input"></td>
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.loc_rec }}</td>
+                  <td>{{ row.add_item_list }}</td>
+                  <td>{{ row.ITEMCODE }}</td>
+                  <td>{{ row.ITEMNAME }}</td>
+                  <td>{{ row.SIZE }}</td>
+                  <td>{{ row.MRP }}</td>
+                  <td>{{ row.BRANDNAME }}</td>
+                  <td>{{ row.SECTION }}</td>
+                  <td>{{ row.SEASON }}</td>
+                  <td>{{ row.COLOURS }}</td>
+                  <td>
+                    <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="13" class="text-center text-muted">No records found</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Nill Table -->
+  <div class="container-fluid mt-4" id="Nill" style="display: none;">
+    <h2 class="mb-4 text-center text-primary fw-bold">📊 Nill Records</h2>
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-body">
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+          <form method="get" action="/scan/">
+            {% csrf_token %}
+            <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                  <th>#</th>
+                  <th>Location</th>
+                  <th>ADDL</th>
+                  <th>Item Code</th>
+                  <th>Item Name</th>
+                  <th>Size</th>
+                  <th>MRP</th>
+                  <th>Brand</th>
+                  <th>Section</th>
+                  <th>Season</th>
+                  <th>Colours</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in display2 %}
+                <tr>
+                  <td><input type="checkbox" name="selected_itemsN" value="{{ row.id }}" class="form-check-input"></td>
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.loc_rec }}</td>
+                  <td>{{ row.add_item_list }}</td>
+                  <td>{{ row.ITEMCODE }}</td>
+                  <td>{{ row.ITEMNAME }}</td>
+                  <td>{{ row.SIZE }}</td>
+                  <td>{{ row.MRP }}</td>
+                  <td>{{ row.BRANDNAME }}</td>
+                  <td>{{ row.SECTION }}</td>
+                  <td>{{ row.SEASON }}</td>
+                  <td>{{ row.COLOURS }}</td>
+                  <td>
+                    <button type="submit" name="delete_id" value="{{ row.id }}" class="btn btn-sm btn-danger">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="13" class="text-center text-muted">No records found</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        const toggle = document.getElementById("menu-toggle");
+
+        toggle.addEventListener("click", () => {
+          sidebar.classList.toggle("active");
+          overlay.classList.toggle("active");
+        });
+
+        overlay.addEventListener("click", () => {
+          sidebar.classList.remove("active");
+          overlay.classList.remove("active");
+        });
+
+        <!-- ✅ Script for Select All -->
+
+        document.getElementById("selectAll").addEventListener("click", function () {
+          let checkboxes = document.querySelectorAll('input[name="selected_items"]');
+          checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        document.getElementById("selectAll").addEventListener("click", function () {
+          let checkboxes = document.querySelectorAll('input[name="selected_itemsE"]');
+          checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        document.getElementById("selectAll").addEventListener("click", function () {
+          let checkboxes = document.querySelectorAll('input[name="selected_itemsN"]');
+          checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+function st(event) {
+    if (event) event.preventDefault();
+
+    let selectedStatus = document.getElementById("status").value;
+
+    let SCR = document.getElementById("Scanning");
+    let ER  = document.getElementById("Excess");
+    let NR  = document.getElementById("Nill");
+
+    // hide all
+    SCR.style.display = "none";
+    ER.style.display  = "none";
+    NR.style.display  = "none";
+
+    // show only selected
+    if (selectedStatus === "Scanning") {
+      SCR.style.display = "block";
+    } else if (selectedStatus === "Excess") {
+      ER.style.display = "block";
+    } else if (selectedStatus === "Nill") {
+      NR.style.display = "block";
+    }
+  }
+      </script>
+
+</body>
+
+</html>
+
+
+
+</body>
+
+</html>

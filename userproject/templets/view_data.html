@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Imported Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+
+<div class="container">
+    <h2 class="mb-4">Imported Data Table</h2><br>
+     <button onclick="downloadExcel()">Download File</button><br>
+    <form action="/data/"  method="post">
+        {% csrf_token %}
+    <table class="table table-bordered table-hover" id="myTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Item Code</th>
+                {% comment %} <th>Item Name</th>
+                <th>Size</th>
+                <th>Qty</th> {% endcomment %}
+            </tr>
+        </thead>
+        <tbody>
+             {% for row in records %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.my_date }}</td>
+                <td name="code">{{ row.my_text }}</td>
+                {% comment %} <td>{{ row.itemname }}</td>
+                <td>{{ row.size }}</td>
+                <td>{{ row.qty }}</td> {% endcomment %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+            <button >Submit</button>
+
+    </form>
+    {% comment %} {% else %}
+  {% if addl %}
+    <p>No records found for "{{ addl }}".</p>
+  {% endif %}
+{% endif %} {% endcomment %}
+
+    <!-- <a href="{% url 'upload_excel' %}" class="btn btn-primary mt-3">Upload More Data</a> -->
+</div>
+
+</body>
+ <script>
+        function downloadExcel() {
+            let table = document.getElementById("myTable");
+            let html = table.outerHTML;
+
+            let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'table_data.xls';  // file name
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</html>

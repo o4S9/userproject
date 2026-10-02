@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audit-Manager Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      height: 100vh;
+      background-color: #1f2937;
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      width: 250px;
+      transition: all 0.3s;
+      z-index: 1050;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 20px;
+      font-size: 16px;
+    }
+
+    .sidebar a:hover {
+      background-color: #374151;
+      border-radius: 5px;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    /* Sidebar adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                height: 100%;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Hide sidebar and shift content for small screens */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                top: 0;
+                left: 0;
+                z-index: 1040;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+        }
+  </style>
+</head>
+<body onload="displayStatus()">
+
+  <!-- Toggle Button (hamburger) -->
+  <nav class="navbar bg-dark d-md-none">
+    <div class="container-fluid">
+      <button class="btn btn-outline-light" id="menu-toggle">☰</button>
+      <span class="navbar-brand mb-0 h1 text-white">Audit-Manager</span>
+    </div>
+  </nav>
+
+     <!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <h4 class="text-start">Audit-Manager</h4>
+    <h5>Welcome {{request.user}}</h5>
+    <hr style="border-color: rgba(255, 255, 255, 0.2)">
+    <a href="/">🏠 Home</a>
+    <a href="/master">📁 Master-File</a>
+    <a href="/upload/">📦 Stock-File</a>
+    <a href="/stockdata">📦 Stock-Record</a>
+    <a href="/masterdata">📈 Master-Record</a>
+    <a href="/dataEnter">📷 Scanning-File</a>
+    <a href="/scand">📷Download-Scanning-File</a>
+    <a href="/ss">🔄 Difference (Stock & Scan)</a>
+    <a href="/logout">🔓 Logout</a>
+  </div>
+
+ <!-- Main Content -->
+  <div class="main-content">
+  <div class="container">
+    <h2 class="mb-4">Download-Scanning Excel File</h2>
+
+    <div class="container py-4">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card shadow-sm p-3">
+            <h5 class="mb-3">Select Status</h5>
+
+        <form action="" method="post">
+        {% csrf_token %}
+              <div class="mb-3">
+                <label for="status" class="form-label">Choose Status:</label>
+                <select id="status" name="status" class="form-select">
+                  <option value="Scanning">Scanning-Sheet</option>
+                  <option value="Excess">Excess-Sheet</option>
+                  <option value="Nill">Nill-Sheet</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" onclick="ls()">Apply</button>
+        </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+
+            <!-- Table Wrapper (scrollable) -->
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered table-striped table-hover align-middle text-center" id="table1">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">ADDL</th>
+                            <th scope="col">ITEMCODE</th>
+                            <th scope="col">ITEMNAME</th>
+                            <th scope="col">SIZE</th>
+                            <th scope="col">MRP</th>
+                            <th scope="col">BRAND</th>
+                            <th scope="col">SECTION</th>
+                            <th scope="col">SEASON</th>
+                            <th scope="col">COLOURS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in display %}
+                        <tr>
+                            <td>{{ row.id }}</td>
+                            <td>{{ row.loc_rec }}</td>
+                            <td>{{ row.add_item_list }}</td>
+                            <td>{{ row.ITEMCODE }}</td>
+                            <td>{{ row.ITEMNAME }}</td>
+                            <td>{{ row.SIZE }}</td>
+                            <td>{{ row.MRP }}</td>
+                            <td>{{ row.BRANDNAME }}</td>
+                            <td>{{ row.SECTION }}</td>
+                            <td>{{ row.SEASON }}</td>
+                            <td>{{ row.COLOURS }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No records found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+         <!-- Download Button -->
+     <div class="container mb-3">
+      <form action="" method="post">
+        {% csrf_token %}
+        <input text="text" name="download" value="" id="myInput" readonly>
+        <button class="btn btn-success" onclick="downloadTable()">📥 Download Table</button>
+      </form>
+    </div><br>
+    
+    
+      <!-- Delete Card -->
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+          <h4 class="card-title text-center text-danger mb-3">🗑 Delete Record</h4>
+          
+          <form method="get" action="/scand">
+            {% csrf_token %}
+
+            <!-- Delete Record  -->
+            <div class="mb-3">
+                <label for="status" class="form-label">Choose Status:</label>
+                <select id="status" name="status" class="form-select">
+                  <option value="">Please Choose Option</option>
+                  <option value="Scanning">Scanning-Sheet</option>
+                  <option value="Excess">Excess-Sheet</option>
+                  <option value="Nill">Nill-Sheet</option>
+                </select>
+              </div>
+
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-danger w-100">
+              Delete Record
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+{% if messages %}
+<div class="container mt-2">
+{% for message in messages %}
+<div class="alert
+{% if message.tags == 'success' %} alert-success
+{% elif message.tags == 'error' %} alert-danger
+{% else %} alert-info {% endif %}
+alert-dismissible fade show" role="alert">
+
+{{ message }}
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+</div>
+
+
+<br>
+   
+</div>
+    
+  <script >
+   const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const toggle = document.getElementById("menu-toggle");
+
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+      overlay.classList.toggle("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+ function ls() {
+      let status = document.getElementById("status").value;
+      localStorage.setItem("DownloadStatus", status);
+      displayStatus();
+    }
+    function displayStatus() {
+      let storedValue = localStorage.getItem("DownloadStatus");
+      document.getElementById("myInput").value = storedValue || ""; // avoid null
+
+    }
+    window.onload = displayStatus;
+
+  </script>
+
+</body>
+</html>
+
+
+
+</body>
+</html>
+
